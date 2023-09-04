@@ -10,12 +10,13 @@ import { LocalStorageService, UserApiService, PostsApiService, AuthService } fro
 })
 export class MainPageComponent implements OnInit, OnDestroy {
   posts?: IPost[];
-  users?: IUser[];
   currentUser?: IUser;
   searchData?: string;
 
+  private users?: IUser[];
   private allPosts?: IPost[];
-  private worker = new Worker(new URL('../search-posts.worker', import.meta.url));
+  /* Initialize worker */
+  private worker = new Worker(new URL('../core/workers/search-posts.worker', import.meta.url));
 
   constructor(
     private readonly lsService: LocalStorageService,
@@ -33,10 +34,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
     this.allPosts = this.posts;
     this.users = await this.userApiService.getAllAsync();
     this.currentUser = this.users.find(user => user.id === token);
-  }
 
-  searchPosts(searchString: string): void {
-    this.worker.postMessage(searchString);
+    /* Listening worker and sorting posts here */
     this.worker.onmessage = ({ data }) => {
       this.posts = [];
       const users = this.users?.filter(user => user.nickname.includes(data));
@@ -55,6 +54,11 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.posts.push(...postsByText);
       }
     }
+  }
+
+  searchPosts(searchString: string): void {
+    /* Trigger the worker */
+    this.worker.postMessage(searchString);
   }
 
   getUserNicknameById(id: string): string {
