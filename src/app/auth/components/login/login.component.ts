@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 
 import { tap } from 'rxjs';
 
-import { AuthService } from '../../../core/services';
+import {AuthService, UserApiService} from '../../../core/services';
 
 @Component({
   selector: 'login',
@@ -27,13 +27,13 @@ export class LoginComponent implements OnInit {
   }
 
   getFormValues = (form: FormGroup): { login: string; password: string } => {
-    console.log('arrow function', this); /* By default 'this' is a class instance and could be re-bound by changing the context */
+    console.log('arrow function', this); /* 'this' always will be a class instance */
 
     return form.value;
   }
 
   authenticate(): void {
-    console.log('classic function', this); /* 'this' always will be the class instance */
+    console.log('classic function', this); /* By default 'this' is a class instance and could be re-bound by changing the context */
 
     this.authService.login(this.getFormValues(this.loginForm))
       .pipe(tap(() => this.router.navigateByUrl('')))
