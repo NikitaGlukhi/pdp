@@ -1,5 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
+import { tap, Subscription } from 'rxjs';
+
 import { IPost, IUser } from '../core/models';
 import { LocalStorageService, UserApiService, PostsApiService, AuthService } from '../core/services';
 
@@ -17,6 +19,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
   private allPosts?: IPost[];
   /* Initialize worker */
   private worker = new Worker(new URL('../core/workers/search-posts.worker', import.meta.url));
+  private readonly subscriptions = new Subscription();
 
   constructor(
     private readonly lsService: LocalStorageService,
@@ -27,13 +30,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     const token = this.lsService.getData('auth-token');
-
-    this.posts = await this.postsApiService.getAll();
-    this.allPosts = this.posts;
-    this.users = await this.userApiService.getAllAsync();
-    this.currentUser = this.users.find(user => user.id === token);
 
     /* Listening worker and sorting posts here */
     this.worker.onmessage = ({ data }) => {
@@ -54,6 +52,24 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.posts.push(...postsByText);
       }
     }
+
+    const postsSub = this.postsApiService.getAll()
+      .pipe(
+        tap(posts => {
+          this.allPosts = posts;
+          this.posts = posts;
+        })
+      ).subscribe();
+    this.subscriptions.add(postsSub);
+
+    const usersSub = this.userApiService.getAll()
+      .pipe(
+        tap(users => {
+          this.users = users;
+          this.currentUser = this.users.find(user => user.id === token);
+        })
+      ).subscribe();
+    this.subscriptions.add(usersSub);
   }
 
   searchPosts(searchString: string): void {
@@ -77,5 +93,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.worker.terminate();
+    this.subscriptions.unsubscribe();
   }
 }

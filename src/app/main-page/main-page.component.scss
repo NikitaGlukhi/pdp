@@ -11,13 +11,33 @@
 
   &-header {
     border-bottom: 1px solid #d0d0d0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
   }
 
   &-body {
     padding-top: 1rem;
+    max-height: 45px;
+    overflow: hidden;
+
+    &:hover {
+      max-height: 62px;
+    }
   }
 }
 
 .p-2 {
   padding: 8rem;
+}
+
+a {
+  color: #00b2ff;
+  text-decoration: none;
+
+  &:hover {
+    cursor: pointer;
+    text-decoration: underline;
+  }
 }

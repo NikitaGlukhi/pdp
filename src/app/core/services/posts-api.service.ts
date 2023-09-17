@@ -1,19 +1,26 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { lastValueFrom } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 import { IDbModel, IPost } from '../models';
 
 
 @Injectable({ providedIn: 'root' })
 export class PostsApiService {
+  private readonly basePath = 'http://localhost:3000';
+
   constructor(private readonly http: HttpClient) {}
 
-  async getAll(): Promise<IPost[]> {
-    const request$ = this.http.get<IDbModel>('assets/db.json');
-    const { posts } = await lastValueFrom<IDbModel>(request$);
+  getAll(): Observable<IPost[]> {
+    return this.http.get<IPost[]>(`${this.basePath}/posts`);
+  }
 
-    return posts;
+  getPostById(id: string): Observable<IPost> {
+    return this.http.get<IPost>(`${this.basePath}/posts/${id}`);
+  }
+
+  updatePost(postId: string, data: string): Observable<void> {
+    return this.http.put<void>(`${this.basePath}/posts/${postId}`, { data });
   }
 }

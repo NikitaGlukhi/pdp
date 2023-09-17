@@ -42,6 +42,10 @@ export class UserApiService {
       .pipe(map(data => data.users.find(user => user.id === id)));
   }
 
+  getAll(): Observable<IUser[]> {
+    return this.http.get<IUser[]>('http://localhost:3000/users');
+  }
+
   async getAllAsync(): Promise<IUser[]> {
     const request$ = this.http.get<IDbModel>(this.basePath);
     const { users } = await lastValueFrom<IDbModel>(request$);

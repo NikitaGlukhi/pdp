@@ -1,0 +1,27 @@
+<div class="p-5">
+  <div class="d-flex flex-row justify-content-between align-items-center pb-4">
+    <button class="btn btn-info" routerLink="/">Go Back</button>
+
+    <div class="d-flex fex-row align-items-center" *ngIf="likes$ | async as likes">
+      <p class="pr-2 mb-0">Liked: {{ likes.length }}</p>
+      <button class="btn btn-success pl-2" (click)="addLike()">Like</button>
+    </div>
+  </div>
+
+  <div class="">
+    <img [src]="post?.image" alt="post_image" />
+
+    <p *ngIf="!editModeEnabled; else editPost" [innerText]="post?.text"></p>
+
+    <button *ngIf="!editModeEnabled" class="btn btn-success" (click)="editModeEnabled = true">Edit</button>
+  </div>
+</div>
+
+<ng-template #editPost>
+  <textarea [(ngModel)]="postText" class="form-control" rows="4"></textarea>
+
+  <div class="d-flex flex-row">
+    <button class="btn btn-success mr-2" (click)="savePost()">Save</button>
+    <button class="btn btn-danger" (click)="editModeEnabled = false">Cancel</button>
+  </div>
+</ng-template>
