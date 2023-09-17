@@ -10,14 +10,18 @@ function getAllData() {
   return fs.readFileSync(path.join(__dirname, './db.json'), { encoding: 'base64' });
 }
 
-router.post('/', (req, res) => {
-  const { body } = req;
+function prepareLikeData(id, data) {
+  return {
+    id,
+    postId: data.postId,
+    likedBy: data.userId,
+  }
+}
 
-  const newLike = {
-    id: v4(),
-    postId: body.data.postId,
-    likedBy: body.data.userId,
-  };
+router.post('/', (req, res) => {
+  const { data } = req.body;
+
+  const newLike = prepareLikeData(v4(), data);
 
   const buffer = getAllData();
   const allData =  JSON.parse(Buffer.from(buffer, 'base64').toString('utf8'));

@@ -8,6 +8,10 @@ function getAllData() {
   return fs.readFileSync(path.join(__dirname, './db.json'), { encoding: 'base64' });
 }
 
+function createPostUpdatedMessage(postId) {
+  return `Post ${postId} updated`;
+}
+
 router.get('/', (req, res) => {
   const buffer = getAllData();
   const allData = Map(JSON.parse(Buffer.from(buffer, 'base64').toString('utf8')));
@@ -36,7 +40,7 @@ router.put('/:id', (req, res) => {
 
   try {
     fs.writeFile(pathToFile, JSON.stringify(allData), () => {
-      console.log(`Post ${id} updated`);
+      console.log(createPostUpdatedMessage(id));
     });
 
     res.sendStatus(200);
