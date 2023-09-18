@@ -77,14 +77,10 @@ export class MainPageComponent implements OnInit, OnDestroy {
     this.worker.postMessage(searchString);
   }
 
-  getUserNicknameById(id: string): string {
+  getUserNicknameById = (id: string): string => {
     const user = this.users?.find(user => user.id === id);
 
-    if (user) {
-      return user.nickname;
-    }
-
-    return 'N/A';
+    return user?.nickname || 'N/A';
   }
 
   logout(): void {

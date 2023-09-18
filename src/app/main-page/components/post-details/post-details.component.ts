@@ -1,10 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Input, Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { tap, switchMap, Observable, Subscription, BehaviorSubject } from 'rxjs';
 
 import { LikesApiService, PostsApiService, LocalStorageService } from '../../../core/services';
-import { IAddLike, ILike, IPost } from '../../../core/models';
+import { IAddLike, ILike, IPost, IUser } from '../../../core/models';
 
 @Component({
   selector: 'post-details',
@@ -27,18 +27,14 @@ export class PostDetailsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const routeSub = this.activatedRoute.params
-      .pipe(
-        tap(params => {
-          const { id } = params;
-          this.postId = id;
-        }),
-        switchMap(() => this.getPostById(this.postId)),
-        switchMap(() => this.getLikes(this.postId)),
-      ).subscribe();
+    const postSub = this.getPostById().subscribe();
+    this.subscriptions.add(postSub);
 
-    this.subscriptions.add(routeSub);
+    const likesSub = this.getLikes(this.getPostId).subscribe();
+    this.subscriptions.add(likesSub);
   }
+
+  getPostId = (): string => this.activatedRoute.snapshot.paramMap.get('id') || 'id';
 
   addLike(): void {
     const userId = this.localStorageService.getData('auth-token') as string;
@@ -49,7 +45,7 @@ export class PostDetailsComponent implements OnInit, OnDestroy {
     }
 
     this.likesApiService.addNewLike(JSON.stringify(data))
-      .pipe(switchMap(() => this.getLikes(this.postId))).subscribe();
+      .pipe(switchMap(() => this.getLikes(this.getPostId))).subscribe();
   }
 
   savePost(): void {
@@ -57,7 +53,7 @@ export class PostDetailsComponent implements OnInit, OnDestroy {
 
     this.postsApiService.updatePost(this.postId, JSON.stringify(updatedPostData))
       .pipe(
-        switchMap(() => this.getPostById(this.postId)),
+        switchMap(() => this.getPostById()),
         tap(() => this.editModeEnabled = false),
       ).subscribe();
   }
@@ -66,13 +62,13 @@ export class PostDetailsComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  private getLikes(postId: string): Observable<ILike[]> {
-    return this.likesApiService.getLikesByPostId(postId)
-      .pipe(tap(likes => this.likes$.next(likes)))
+  private getLikes(getPostId: () => string): Observable<ILike[]> {
+    return this.likesApiService.getLikesByPostId(getPostId())
+      .pipe(tap(likes => setTimeout(() => this.likes$.next(likes), 0)));
   }
 
-  private getPostById(id: string): Observable<IPost> {
-    return this.postsApiService.getPostById(id)
+  private getPostById(): Observable<IPost> {
+    return this.postsApiService.getPostById(this.getPostId)
       .pipe(tap(post => {
         this.post = post;
         this.postText = post.text;

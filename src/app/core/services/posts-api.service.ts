@@ -16,8 +16,8 @@ export class PostsApiService {
     return this.http.get<IPost[]>(`${this.basePath}/posts`);
   }
 
-  getPostById(id: string): Observable<IPost> {
-    return this.http.get<IPost>(`${this.basePath}/posts/${id}`);
+  getPostById(getPostId: () => string): Observable<IPost> {
+    return this.http.get<IPost>(`${this.basePath}/posts/${getPostId()}`);
   }
 
   updatePost(postId: string, data: string): Observable<void> {
