@@ -16,7 +16,6 @@ export class PostDetailsComponent implements OnInit, OnDestroy {
   editModeEnabled = false;
   postText = '';
 
-  private postId = '';
   private readonly subscriptions = new Subscription();
 
   constructor(
@@ -34,13 +33,11 @@ export class PostDetailsComponent implements OnInit, OnDestroy {
     this.subscriptions.add(likesSub);
   }
 
-  getPostId = (): string => this.activatedRoute.snapshot.paramMap.get('id') || 'id';
-
   addLike(): void {
     const userId = this.localStorageService.getData('auth-token') as string;
 
     const data: IAddLike = {
-      postId: this.postId,
+      postId: this.getPostId(),
       userId,
     }
 
@@ -51,10 +48,10 @@ export class PostDetailsComponent implements OnInit, OnDestroy {
   savePost(): void {
     const updatedPostData = { ...this.post, text: this.postText };
 
-    this.postsApiService.updatePost(this.postId, JSON.stringify(updatedPostData))
+    this.postsApiService.updatePost(this.getPostId, JSON.stringify(updatedPostData))
       .pipe(
-        switchMap(() => this.getPostById()),
         tap(() => this.editModeEnabled = false),
+        switchMap(() => this.getPostById()),
       ).subscribe();
   }
 
@@ -70,8 +67,12 @@ export class PostDetailsComponent implements OnInit, OnDestroy {
   private getPostById(): Observable<IPost> {
     return this.postsApiService.getPostById(this.getPostId)
       .pipe(tap(post => {
-        this.post = post;
-        this.postText = post.text;
+        setTimeout(() => {
+          this.post = post;
+          this.postText = post.text;
+        }, 0)
       }));
   }
+
+  private getPostId = (): string => this.activatedRoute.snapshot.paramMap.get('id') || 'id';
 }
