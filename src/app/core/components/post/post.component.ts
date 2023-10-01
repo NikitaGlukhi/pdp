@@ -10,7 +10,7 @@ import { IPost } from '../../models';
 export class PostComponent {
   @Input() post?: IPost;
   @Input() currentUserId?: string;
-  @Input() getUserName: (id?: string) => string;
+  @Input() userName?: string;
 
   likedByUser = (): boolean => {
     const like = this.post?.likes.find(like => like.likedBy === this.currentUserId);

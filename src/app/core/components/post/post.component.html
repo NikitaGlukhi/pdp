@@ -1,6 +1,6 @@
 <div class="post" *ngIf="post">
   <div class="post-header">
-    <h4><a [routerLink]="'profile/' + post.userId" [innerText]="getUserName(post.userId)"></a></h4>
+    <h4><a [routerLink]="'profile/' + post.userId" [innerText]="userName"></a></h4>
 
     <a [routerLink]="'post/' + post.id">Go to post</a>
   </div>
