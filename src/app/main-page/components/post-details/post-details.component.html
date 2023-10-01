@@ -2,10 +2,11 @@
   <div class="d-flex flex-row justify-content-between align-items-center pb-4">
     <button class="btn btn-info" routerLink="/">Go Back</button>
 
-    <div class="d-flex fex-row align-items-center" *ngIf="likes$ | async as likes">
-      <p class="pr-2 mb-0">Liked: {{ likes.length }}</p>
-      <button class="btn btn-success pl-2" (click)="addLike()">Like</button>
-    </div>
+    <likes-core
+      [likes]="post?.likes"
+      [likedByUser]="likedByUser"
+      (onLikedOrDisliked)="$event ? addLike() : removeLike()"
+    ></likes-core>
   </div>
 
   <div class="">

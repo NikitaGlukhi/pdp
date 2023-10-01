@@ -15,8 +15,14 @@ function createPostUpdatedMessage(postId) {
 router.get('/', (req, res) => {
   const buffer = getAllData();
   const allData = Map(JSON.parse(Buffer.from(buffer, 'base64').toString('utf8')));
+  const posts = allData.get('posts');
+  const result = posts.map(post => {
+    const likes = allData.get('likes').filter(like => like.postId === post.id);
 
-  res.send(allData.get('posts'));
+    return { ...post, likes };
+  })
+
+  res.send(result);
 });
 
 router.get('/:id', (req, res) => {
@@ -25,8 +31,9 @@ router.get('/:id', (req, res) => {
   const allData = Map(JSON.parse(Buffer.from(buffer, 'base64').toString('utf8')));
   const posts = allData.get('posts');
   const result = posts.find(post => post.id === id);
+  const resultLikes = allData.get('likes').filter(like => like.postId === result.id)
 
-  res.send(result);
+  res.send({ ...result, likes: resultLikes });
 });
 
 router.put('/:id', (req, res) => {

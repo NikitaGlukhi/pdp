@@ -1,0 +1,11 @@
+<div class="d-flex flex-row align-items-center like w-100">
+  <p class="mb-0">Likes: {{ likes?.length }}</p>
+
+  <button
+    class="btn"
+    [class.btn-success]="!likedByUser()"
+    [class.btn-danger]="likedByUser()"
+    [innerText]="likedByUser() ? 'Dislike' : 'Like'"
+    (click)="likeOrDislike()"
+  >Like</button>
+</div>

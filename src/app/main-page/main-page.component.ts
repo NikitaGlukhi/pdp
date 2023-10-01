@@ -77,7 +77,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
     this.worker.postMessage(searchString);
   }
 
-  getUserNicknameById = (id: string): string => {
+  getUserNicknameById = (id?: string): string => {
     const user = this.users?.find(user => user.id === id);
 
     return user?.nickname || 'N/A';

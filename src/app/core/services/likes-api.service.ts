@@ -14,6 +14,10 @@ export class LikesApiService {
     return this.http.post<void>(`${this.basePath}/likes`, { data: JSON.parse(data) });
   }
 
+  removeLike(likeId: string): Observable<void> {
+    return this.http.delete<void>(`${this.basePath}/likes/${likeId}`);
+  }
+
   getLikesByPostId(postId: string): Observable<ILike[]> {
     return this.http.get<ILike[]>(`${this.basePath}/likes/${postId}`);
   }

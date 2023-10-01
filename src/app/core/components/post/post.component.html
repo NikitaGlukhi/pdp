@@ -1,0 +1,20 @@
+<div class="post" *ngIf="post">
+  <div class="post-header">
+    <h4 [innerText]="getUserName(post.userId)"></h4>
+
+    <a [routerLink]="post.id" setUnderline>Go to post</a>
+  </div>
+
+  <div class="post-body">
+    <p [innerText]="post.text"></p>
+  </div>
+
+  <div class="post-footer">
+    <div class="d-flex justify-content-end">
+      <likes-core
+        [likes]="post.likes"
+        [likedByUser]="likedByUser"
+      ></likes-core>
+    </div>
+  </div>
+</div>

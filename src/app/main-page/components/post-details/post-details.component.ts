@@ -15,6 +15,7 @@ export class PostDetailsComponent implements OnInit, OnDestroy {
   likes$ = new BehaviorSubject<ILike[]>([]);
   editModeEnabled = false;
   postText = '';
+  userId?: string;
 
   private readonly subscriptions = new Subscription();
 
@@ -26,6 +27,7 @@ export class PostDetailsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.userId = this.localStorageService.getData('auth-token') as string;
     const postSub = this.getPostById().subscribe();
     this.subscriptions.add(postSub);
 
@@ -33,16 +35,28 @@ export class PostDetailsComponent implements OnInit, OnDestroy {
     this.subscriptions.add(likesSub);
   }
 
-  addLike(): void {
-    const userId = this.localStorageService.getData('auth-token') as string;
+  likedByUser = (): boolean => {
+    const like = this.post?.likes.find(like => like.likedBy === this.userId);
 
+    return !!like;
+  }
+
+  addLike(): void {
     const data: IAddLike = {
       postId: this.getPostId(),
-      userId,
+      userId: this.userId as string,
     }
 
     this.likesApiService.addNewLike(JSON.stringify(data))
       .pipe(switchMap(() => this.getLikes(this.getPostId))).subscribe();
+  }
+
+  removeLike(): void {
+    const like = this.post?.likes.find(like => like.likedBy === this.userId);
+
+    if (like) {
+      this.likesApiService.removeLike(like.id).subscribe();
+    }
   }
 
   savePost(): void {

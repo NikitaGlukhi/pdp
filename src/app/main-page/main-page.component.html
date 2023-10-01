@@ -5,15 +5,11 @@
 <div class="posts">
   <input type="text" [ngModel]="searchData" class="form-control" placeholder="Search posts by username or post content" (ngModelChange)="searchPosts($event)" />
 
-  <div class="post" *ngFor="let post of posts">
-    <div class="post-header">
-      <h4 [innerText]="getUserNicknameById(post.userId)"></h4>
-
-      <a [routerLink]="post.id" setUnderline>Go to post</a>
-    </div>
-
-    <div class="post-body">
-      <p [innerText]="post.text"></p>
-    </div>
+  <div *ngFor="let post of posts">
+    <post-core
+      [post]="post"
+      [currentUserId]="currentUser?.id"
+      [getUserName]="getUserNicknameById"
+    ></post-core>
   </div>
 </div>
