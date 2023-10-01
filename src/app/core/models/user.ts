@@ -1,3 +1,5 @@
+import { IPost } from './post';
+
 export interface IUser {
   id: string;
   fullName: string;
@@ -6,4 +8,5 @@ export interface IUser {
   phoneNumber: string;
   password: string;
   photo: string;
+  posts?: IPost[];
 }

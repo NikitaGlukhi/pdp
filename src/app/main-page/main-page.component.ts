@@ -26,9 +26,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
     private readonly userApiService: UserApiService,
     private readonly postsApiService: PostsApiService,
     private readonly authService: AuthService,
-  ) {
-
-  }
+  ) {}
 
   ngOnInit(): void {
     const token = this.lsService.getData('auth-token');

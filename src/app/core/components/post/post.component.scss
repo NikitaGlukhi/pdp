@@ -27,3 +27,13 @@
     margin-top: 2rem;
   }
 }
+
+a {
+  color: #00b2ff !important;
+  text-decoration: none !important;
+
+  &:hover {
+    cursor: pointer;
+    text-decoration: underline !important;
+  }
+}

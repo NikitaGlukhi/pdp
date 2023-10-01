@@ -1,0 +1,17 @@
+<div class="px-2 py-4">
+  <div class="d-flex flex-row justify-content-center align-items-start gap-5" *ngIf="user">
+    <div class="d-flex flex-column w-50 mr-4" *ngIf="user !== undefined">
+      <div *ngFor="let post of user.posts">
+        <post-core
+          [post]="post"
+          [currentUserId]="user.id"
+          [getUserName]="getUserName"
+        ></post-core>
+      </div>
+    </div>
+
+    <div class="w-25">
+      <user-data [user]="user" [isCurrentUser]="isCurrentUser"></user-data>
+    </div>
+  </div>
+</div>
