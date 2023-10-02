@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 
 import { tap, Observable } from 'rxjs';
 
-import { LocalStorageService } from './local-storage.service';
+import { StorageService } from './storage.service';
 import { IDbModel, IUser } from '../models';
 
 @Injectable({ providedIn: 'root' })
@@ -12,7 +12,7 @@ export class UserApiService {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly lsService: LocalStorageService,
+    private readonly lsService: StorageService,
   ) {}
 
   /*

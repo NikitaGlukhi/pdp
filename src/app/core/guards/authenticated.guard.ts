@@ -3,10 +3,10 @@ import { CanActivateFn, Router } from '@angular/router';
 
 import { map, Observable } from 'rxjs';
 
-import { LocalStorageService, UserApiService } from '../services';
+import { StorageService, UserApiService } from '../services';
 
 export const isAuthenticated: CanActivateFn = (): boolean | Observable<boolean> => {
-  const token = inject(LocalStorageService).getData('auth-token');
+  const token = inject(StorageService).getData('auth-token');
   if (!token) {
     inject(Router).navigateByUrl('/auth');
     return false;

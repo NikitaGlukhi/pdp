@@ -3,13 +3,13 @@ import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 
 import { UserApiService } from './user-api.service';
-import { LocalStorageService } from './local-storage.service';
+import { StorageService } from './storage.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   constructor(
     private readonly userApiService: UserApiService,
-    private readonly lsService: LocalStorageService,
+    private readonly lsService: StorageService,
   ) {}
 
   login(data: { login: string; password: string }): Observable<void> {

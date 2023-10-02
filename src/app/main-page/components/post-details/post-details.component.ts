@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import { tap, switchMap, Observable, Subscription, BehaviorSubject } from 'rxjs';
 
-import { LikesApiService, PostsApiService, LocalStorageService } from '../../../core/services';
+import { LikesApiService, PostsApiService, StorageService } from '../../../core/services';
 import { IAddLike, ILike, IPost, IUser } from '../../../core/models';
 
 @Component({
@@ -23,11 +23,11 @@ export class PostDetailsComponent implements OnInit, OnDestroy {
     private readonly activatedRoute: ActivatedRoute,
     private readonly postsApiService: PostsApiService,
     private readonly likesApiService: LikesApiService,
-    private readonly localStorageService: LocalStorageService,
+    private readonly storageService: StorageService,
   ) {}
 
   ngOnInit(): void {
-    this.userId = this.localStorageService.getData('auth-token') as string;
+    this.userId = this.storageService.getData('auth-token') as string;
     const postSub = this.getPostById().subscribe();
     this.subscriptions.add(postSub);
 

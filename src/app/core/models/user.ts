@@ -1,6 +1,7 @@
+import { BaseEntity } from './base-entity';
 import { IPost } from './post';
 
-export interface IUser {
+export interface IUser extends BaseEntity {
   id: string;
   fullName: string;
   nickname: string;

@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import { tap, Subscription, Observable } from 'rxjs';
 
-import { UserApiService, LocalStorageService } from '../core/services';
+import { UserApiService, StorageService } from '../core/services';
 import { IUser } from '../core/models';
 
 @Component({
@@ -18,12 +18,12 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   constructor(
     private readonly route: ActivatedRoute,
     private readonly userApiService: UserApiService,
-    private readonly localStorageService: LocalStorageService,
+    private readonly storageService: StorageService,
   ) {}
 
   ngOnInit(): void {
     const userId = this.route.snapshot.paramMap.get('userId') as string;
-    const currentUserId = this.localStorageService.getData('auth-token') as string;
+    const currentUserId = this.storageService.getData('auth-token') as string;
 
     this.isCurrentUser = userId === currentUserId;
 

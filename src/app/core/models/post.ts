@@ -1,10 +1,9 @@
+import { BaseEntity } from './base-entity';
 import { ILike } from './like';
 
-export interface IPost {
-  id: string;
+export interface IPost extends BaseEntity {
   text: string;
   userId: string;
   image?: string;
-  createdAt: number;
   likes: ILike[];
 }

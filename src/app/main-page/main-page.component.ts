@@ -3,7 +3,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { tap, Subscription } from 'rxjs';
 
 import { IPost, IUser } from '../core/models';
-import { LocalStorageService, UserApiService, PostsApiService, AuthService } from '../core/services';
+import { StorageService, UserApiService, PostsApiService, AuthService } from '../core/services';
 
 @Component({
   selector: 'main-page',
@@ -22,7 +22,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
   private readonly subscriptions = new Subscription();
 
   constructor(
-    private readonly lsService: LocalStorageService,
+    private readonly lsService: StorageService,
     private readonly userApiService: UserApiService,
     private readonly postsApiService: PostsApiService,
     private readonly authService: AuthService,
