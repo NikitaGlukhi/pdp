@@ -1,10 +1,10 @@
-<div class="user">
-  <div class="d-flex flex-column" *ngIf="user">
+<div class="user" *ngIf="user">
+  <div class="d-flex flex-column">
     <h4 class="pt-1 pb-1">Nickname: <b>{{ user.nickname }}</b></h4>
     <h4 class="pb-1">Full name: <b>{{ user.fullName }}</b></h4>
     <h4 class="pb-1">Email: <b>{{ user.email }}</b></h4>
     <h4 class="pb-1">Posts: <b>{{ user.posts?.length || 0 }}</b></h4>
   </div>
 
-  <button class="btn btn-success" *ngIf="!isCurrentUser">Follow</button>
+  <button class="btn btn-success" *ngIf="!isCurrentUser" (click)="Object.addFollower(user.id)">Follow</button>
 </div>

@@ -11,7 +11,11 @@
     </div>
 
     <div class="w-25">
-      <user-data [user]="user" [isCurrentUser]="isCurrentUser"></user-data>
+      <user-data
+        #userData
+        [user]="user"
+        (followed)="followUser($event)"
+      ></user-data>
     </div>
   </div>
 </div>

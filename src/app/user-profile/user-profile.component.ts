@@ -1,8 +1,9 @@
-import { OnInit, OnDestroy, Component } from '@angular/core';
+import { OnInit, OnDestroy, Component, ViewChildren } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { tap, Subscription, Observable } from 'rxjs';
+import { tap, Subscription } from 'rxjs';
 
+import { UserComponent } from '../core/components';
 import { UserApiService, StorageService } from '../core/services';
 import { IUser } from '../core/models';
 
@@ -11,8 +12,12 @@ import { IUser } from '../core/models';
   templateUrl: './user-profile.component.html',
 })
 export class UserProfileComponent implements OnInit, OnDestroy {
+  @ViewChildren('userData', { read: UserComponent }) userDataComponent?: UserComponent;
+
   user?: IUser;
   isCurrentUser?: boolean;
+  userId?: string;
+  currentUserId?: string;
   private readonly subscriptions = new Subscription();
 
   constructor(
@@ -22,15 +27,17 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const userId = this.route.snapshot.paramMap.get('userId') as string;
-    const currentUserId = this.storageService.getData('auth-token') as string;
+    this.userId = this.route.snapshot.paramMap.get('userId') as string;
+    this.currentUserId = this.storageService.getData('auth-token') as string;
 
-    this.isCurrentUser = userId === currentUserId;
-
-    const userSub = this.userApiService.getUserById(userId)
+    const userSub = this.userApiService.getUserById(this.userId)
       .pipe(tap(user => this.user = user)).subscribe();
 
     this.subscriptions.add(userSub);
+  }
+
+  followUser(userId: string): void {
+    console.log(userId);
   }
 
   getUserName(): string {
