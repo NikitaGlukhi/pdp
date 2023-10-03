@@ -8,11 +8,6 @@ function totalPostLikes(checkDate: number, username: string): void {
   prompt(`This post was liked ${this.likes?.length} time(-s). Checked ${new Date(checkDate).toUTCString()} by ${username}.`);
 }
 
-function totalPostLikesBind(): void {
-  // @ts-ignore
-  prompt(`This post was liked ${this.likes?.length} time(-s).`);
-}
-
 @Component({
   selector: 'post-core',
   templateUrl: './post.component.html',

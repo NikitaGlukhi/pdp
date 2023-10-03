@@ -1,23 +1,25 @@
-## Pure functions
-You can find example of using pure function in `backend/posts.js, string 11`
+## Levels of abstraction
+You can find User, Post and Likes components in `src/app/core/components` an how they used in app in `src/app/user-profile` and `src/app/main-page` folders
 
 ## Composition
-The examples of using composition is using RxJS `.pipe()` method in `src/app/main-page/main-page.component.ts` and `src/app/main-page/components/post-details/post-details.component.ts` files
+UserProfile component - `src/app/user-profile/user-profile.component.ts`
 
-## First-class functions
-The examples of using first-class functions you can find in `src/app/main-page/components/post-details/post-details.component.ts` and `src/app/core/services/posts-api.service.ts` files
+## Prototypes in JS / by reference vs copying
+An example of using prototype and demonstrating difference between using data as reference or value is in `src/app/core/components/user/user.component.ts`
 
-## Immutable data structures
-The examples of working with Immutable data structures you can find in `backend/likes.js` and `backend/likes.js` files
+## Interfaces
+All interfaces you can find in `src/app/core/models` 
 
-## Event loop
-Added listener for mouse over/out at `src/app/core/directives/set-underline.directive.ts` directive, that adds/removes css class on hover/out from text
+## Classes and Inheritance
+An example of inheritance you can find in `src/app/core/models` where BaseEntity is a parent class for ILike, IPost and IUser
 
-## Angular routing
-Added routing for each post, you can find configuration of this in `src/app/main-page/main-page-routing.module.ts` file
+## Introduction to Web Storages
+You can find storage service with using local/session storages and cookies in `src/app/core/services/storage.service.ts`
 
-## HTTP Requests and REST API Integration
-Implemented small backend app via Express.JS. You can find it in `backend` folder
+## Cookies, Local/Session storages
+LocalStorage is a single storage for one domain in single browser, that's why it's the best way to store data for user preferences 
+Session storage is the same as LocalStorage, but it will be able only for single tab and will be empty after tab was closed. This is the good way to implement different scenarios whe user works in parallel tabs
+Cookies is a good way to remember user activity in application and apply specific users's data in new browser 
 
-## TypeScript with Angular
-Frontend part of application is written by using of Angular. You chan check it in `src` folder
+## Bind/Call/Apply
+TYhe example of using - `src/app/core/components/post/post.component.ts`
