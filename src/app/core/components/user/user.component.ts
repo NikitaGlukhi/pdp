@@ -26,7 +26,7 @@ export class UserComponent implements OnInit {
     Object.prototype.addFollower = function(userId: string): void {
       componentContext.followed.emit(userId); // emitter will be parsed on parent component
 
-      new UserComponent().followed.emit(userId) // emitter won't be passed on parent component, because it was emitted on the copy of UserComponent was created
+      new UserComponent().followed.emit(userId) // emitter won't be parsed on parent component, because it was emitted on the copy of UserComponent was created
     }
   }
 }
