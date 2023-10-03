@@ -10,11 +10,14 @@
   </div>
 
   <div class="post-footer">
-    <div class="d-flex justify-content-end">
+    <div class="d-flex flex-row justify-content-end">
       <likes-core
+        #likes
         [likes]="post.likes"
         [likedByUser]="likedByUser"
       ></likes-core>
+
+      <button class="btn btn-info" (click)="countTotalLikes()">Show total likes</button>
     </div>
   </div>
 </div>
