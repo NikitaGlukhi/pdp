@@ -1,7 +1,8 @@
-import { Input, AfterViewInit, ViewChild, Component } from '@angular/core';
+import { Input, Output, ViewChild, Component, EventEmitter } from '@angular/core';
 
-import { IPost } from '../../models';
+import {IAddLike, IPost} from '../../models';
 import { LikesComponent } from '../likes/likes.component';
+import {switchMap} from 'rxjs';
 
 function totalPostLikes(checkDate: number, username: string): void {
   // @ts-ignore
@@ -20,6 +21,9 @@ export class PostComponent {
   @Input() currentUserId?: string;
   @Input() userName?: string;
 
+  @Output() onLike = new EventEmitter<void>();
+  @Output() onDislike = new EventEmitter<void>();
+
   countTotalLikes(): void {
     totalPostLikes.apply(this.likesComponent, [Date.now(), this.userName || 'N/A']); // will get expected result
     totalPostLikes.call(this.likesComponent, Date.now(), this.userName || 'N/A'); // will get expected result
@@ -31,4 +35,8 @@ export class PostComponent {
 
     return !!like;
   }
+
+  addLike = (): void => this.onLike.emit();
+
+  removeLike = (): void => this.onDislike.emit();
 }

@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
-import { tap, Subscription } from 'rxjs';
+import { tap, Subscription, switchMap } from 'rxjs';
 
-import { IPost, IUser } from '../core/models';
-import { StorageService, UserApiService, PostsApiService, AuthService } from '../core/services';
+import { IAddLike, IPost, IUser } from '../core/models';
+import { StorageService, UserApiService, PostsApiService, AuthService, LikesApiService } from '../core/services';
 
 @Component({
   selector: 'main-page',
@@ -26,6 +26,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
     private readonly userApiService: UserApiService,
     private readonly postsApiService: PostsApiService,
     private readonly authService: AuthService,
+    private readonly likesApiService: LikesApiService,
   ) {}
 
   ngOnInit(): void {
@@ -68,6 +69,23 @@ export class MainPageComponent implements OnInit, OnDestroy {
         })
       ).subscribe();
     this.subscriptions.add(usersSub);
+  }
+
+  addLike(postId: string): void {
+    const data: IAddLike = {
+      postId,
+      userId: this.currentUser?.id as string,
+    }
+
+    this.likesApiService.addNewLike(JSON.stringify(data)).subscribe();
+  }
+
+  removeLike(post: IPost): void {
+    const like = post.likes.find(like => like.likedBy === this.currentUser?.id);
+
+    if (like) {
+      this.likesApiService.removeLike(like.id).subscribe();
+    }
   }
 
   searchPosts(searchString: string): void {

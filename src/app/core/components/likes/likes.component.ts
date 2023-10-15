@@ -12,6 +12,6 @@ export class LikesComponent {
   @Output() onLikedOrDisliked = new EventEmitter<boolean>();
 
   likeOrDislike(): void {
-    this.onLikedOrDisliked.emit(!this.likedByUser);
+    this.onLikedOrDisliked.emit(!this.likedByUser());
   }
 }

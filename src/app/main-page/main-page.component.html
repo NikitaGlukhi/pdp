@@ -12,6 +12,8 @@
       [post]="post"
       [currentUserId]="post.userId"
       [userName]="getUserNicknameById(post.userId)"
+      (onLike)="addLike(post.id)"
+      (onDislike)="removeLike(post)"
     ></post-core>
   </div>
 </div>

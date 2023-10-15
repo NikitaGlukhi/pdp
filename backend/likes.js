@@ -39,7 +39,7 @@ router.post('/', (req, res) => {
 
     res.sendStatus(500);
   }
-})
+});
 
 router.get('/:postId', (req, res) => {
   const { postId } = req.params;
@@ -49,6 +49,26 @@ router.get('/:postId', (req, res) => {
   const result = likes.filter(like => like.postId === postId);
 
   res.send(result);
-})
+});
+
+router.delete('/:likeId', (req, res) => {
+  const { likeId } = req.params;
+  const buffer = getAllData();
+  const allData =  JSON.parse(Buffer.from(buffer, 'base64').toString('utf8'));
+  const pathToFile = path.join(__dirname, './db.json');
+  allData.likes = allData.likes.filter(like => like.id !== likeId);
+
+  try {
+    fs.writeFile(pathToFile, JSON.stringify(allData), () => {
+      console.log('Like removed');
+    });
+
+    res.sendStatus(200);
+  } catch (err) {
+    console.log(err.message);
+
+    res.sendStatus(500);
+  }
+});
 
 module.exports = router;
