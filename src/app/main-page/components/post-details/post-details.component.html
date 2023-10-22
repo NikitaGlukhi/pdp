@@ -9,10 +9,10 @@
     ></likes-core>
   </div>
 
-  <div class="">
-    <img [src]="post?.image" alt="post_image" />
+  <div class="" *ngIf="post">
+    <img *ngIf="isImagePost(post)" [src]="getImgUrl(post)" alt="post_image" />
 
-    <p *ngIf="!editModeEnabled; else editPost" [innerText]="post?.text"></p>
+    <p *ngIf="!editModeEnabled; else editPost" [innerText]="post.text || ''"></p>
 
     <button *ngIf="!editModeEnabled" class="btn btn-success" (click)="editModeEnabled = true">Edit</button>
   </div>

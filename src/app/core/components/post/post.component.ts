@@ -1,8 +1,8 @@
 import { Input, Output, ViewChild, Component, EventEmitter } from '@angular/core';
 
-import {IAddLike, IPost} from '../../models';
+import { FeaturedPost } from '../../types/featured-post';
 import { LikesComponent } from '../likes/likes.component';
-import {switchMap} from 'rxjs';
+import {FeaturedImagePost} from '../../types/featured-image-post';
 
 function totalPostLikes(checkDate: number, username: string): void {
   // @ts-ignore
@@ -17,7 +17,7 @@ function totalPostLikes(checkDate: number, username: string): void {
 export class PostComponent {
   @ViewChild('likes', { read: LikesComponent }) likesComponent?: LikesComponent;
 
-  @Input() post?: IPost;
+  @Input() post?: FeaturedPost;
   @Input() currentUserId?: string;
   @Input() userName?: string;
 
@@ -34,6 +34,14 @@ export class PostComponent {
     const like = this.post?.likes.find(like => like.likedBy === this.currentUserId);
 
     return !!like;
+  }
+
+  isImagePost(post: FeaturedPost): boolean {
+    return !!(<FeaturedImagePost>post).imgUrl;
+  }
+
+  getImgUrl(post: FeaturedPost): string {
+    return (<FeaturedImagePost>post).imgUrl;
   }
 
   addLike = (): void => this.onLike.emit();

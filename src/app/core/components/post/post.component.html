@@ -6,7 +6,8 @@
   </div>
 
   <div class="post-body">
-    <p [innerText]="post.text | capitalizeFirstLetter"></p>
+    <img *ngIf="isImagePost(post)" [src]="getImgUrl(post)" alt="post image" />
+    <p *ngIf="post.text" [innerText]="post.text | capitalizeFirstLetter"></p>
   </div>
 
   <div class="post-footer">

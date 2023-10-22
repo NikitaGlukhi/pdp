@@ -1,5 +1,5 @@
 import { BaseEntity } from './base-entity';
-import { IPost } from './post';
+import { FeaturedPost } from '../types/featured-post';
 
 export interface IUser extends BaseEntity {
   id: string;
@@ -9,5 +9,5 @@ export interface IUser extends BaseEntity {
   phoneNumber: string;
   password: string;
   photo: string;
-  posts?: IPost[];
+  posts?: FeaturedPost[];
 }

@@ -2,7 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { tap, Subscription, switchMap } from 'rxjs';
 
-import { IAddLike, IPost, IUser } from '../core/models';
+import { IAddLike, IUser } from '../core/models';
+import { FeaturedPost } from '../core/types/featured-post';
 import { StorageService, UserApiService, PostsApiService, AuthService, LikesApiService } from '../core/services';
 
 @Component({
@@ -11,12 +12,12 @@ import { StorageService, UserApiService, PostsApiService, AuthService, LikesApiS
   styleUrls: ['./main-page.component.scss'],
 })
 export class MainPageComponent implements OnInit, OnDestroy {
-  posts?: IPost[];
+  posts?: FeaturedPost[];
   currentUser?: IUser;
   searchData?: string;
 
   private users?: IUser[];
-  private allPosts?: IPost[];
+  private allPosts?: FeaturedPost[];
   /* Initialize worker */
   private worker = new Worker(new URL('../core/workers/search-posts.worker', import.meta.url));
   private readonly subscriptions = new Subscription();
@@ -46,7 +47,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
         }
       }
 
-      const postsByText = this.allPosts?.filter(post => post.text.includes(data));
+      const postsByText = this.allPosts?.filter(post => post.text?.includes(data));
       if (postsByText && postsByText.length > 0) {
         this.posts.push(...postsByText);
       }
@@ -80,7 +81,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
     this.likesApiService.addNewLike(JSON.stringify(data)).subscribe();
   }
 
-  removeLike(post: IPost): void {
+  removeLike(post: FeaturedPost): void {
     const like = post.likes.find(like => like.likedBy === this.currentUser?.id);
 
     if (like) {

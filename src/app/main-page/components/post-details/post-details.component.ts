@@ -4,17 +4,19 @@ import { ActivatedRoute } from '@angular/router';
 import { tap, switchMap, Observable, Subscription, BehaviorSubject } from 'rxjs';
 
 import { LikesApiService, PostsApiService, StorageService } from '../../../core/services';
-import { IAddLike, ILike, IPost, IUser } from '../../../core/models';
+import { IAddLike, ILike } from '../../../core/models';
+import { FeaturedPost } from '../../../core/types/featured-post';
+import {FeaturedImagePost} from '../../../core/types/featured-image-post';
 
 @Component({
   selector: 'post-details',
   templateUrl: './post-details.component.html',
 })
 export class PostDetailsComponent implements OnInit, OnDestroy {
-  post?: IPost;
+  post?: FeaturedPost;
   likes$ = new BehaviorSubject<ILike[]>([]);
   editModeEnabled = false;
-  postText = '';
+  postText?: string;
   userId?: string;
 
   private readonly subscriptions = new Subscription();
@@ -69,6 +71,14 @@ export class PostDetailsComponent implements OnInit, OnDestroy {
       ).subscribe();
   }
 
+  isImagePost(post: FeaturedPost): boolean {
+    return !!(<FeaturedImagePost>post).imgUrl;
+  }
+
+  getImgUrl(post: FeaturedPost): string {
+    return (<FeaturedImagePost>post).imgUrl;
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
@@ -78,7 +88,7 @@ export class PostDetailsComponent implements OnInit, OnDestroy {
       .pipe(tap(likes => setTimeout(() => this.likes$.next(likes), 0)));
   }
 
-  private getPostById(): Observable<IPost> {
+  private getPostById(): Observable<FeaturedPost> {
     return this.postsApiService.getPostById(this.getPostId)
       .pipe(tap(post => {
         setTimeout(() => {

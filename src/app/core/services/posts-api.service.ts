@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
 
-import { IPost } from '../models';
+import { FeaturedPost } from '../types/featured-post';
 
 
 @Injectable({ providedIn: 'root' })
@@ -12,12 +12,12 @@ export class PostsApiService {
 
   constructor(private readonly http: HttpClient) {}
 
-  getAll(): Observable<IPost[]> {
-    return this.http.get<IPost[]>(`${this.basePath}/posts`);
+  getAll(): Observable<FeaturedPost[]> {
+    return this.http.get<FeaturedPost[]>(`${this.basePath}/posts`);
   }
 
-  getPostById(getPostId: () => string): Observable<IPost> {
-    return this.http.get<IPost>(`${this.basePath}/posts/${getPostId()}`);
+  getPostById(getPostId: () => string): Observable<FeaturedPost> {
+    return this.http.get<FeaturedPost>(`${this.basePath}/posts/${getPostId()}`);
   }
 
   updatePost(postId: () => string, data: string): Observable<void> {
