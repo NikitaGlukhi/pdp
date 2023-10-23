@@ -23,6 +23,7 @@ export class PostComponent {
 
   @Output() onLike = new EventEmitter<void>();
   @Output() onDislike = new EventEmitter<void>();
+  @Output() onMarkedFeatured = new EventEmitter<{ postId: string, isFeatured: boolean }>();
 
   countTotalLikes(): void {
     totalPostLikes.apply(this.likesComponent, [Date.now(), this.userName || 'N/A']); // will get expected result
@@ -35,6 +36,8 @@ export class PostComponent {
 
     return !!like;
   }
+
+  markFeatured = (postId: string, isFeatured: boolean): void => this.onMarkedFeatured.emit({ postId, isFeatured });
 
   isImagePost(post: FeaturedPost): boolean {
     return !!(<FeaturedImagePost>post).imgUrl;

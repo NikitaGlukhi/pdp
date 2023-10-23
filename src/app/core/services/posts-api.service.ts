@@ -23,4 +23,8 @@ export class PostsApiService {
   updatePost(postId: () => string, data: string): Observable<void> {
     return this.http.put<void>(`${this.basePath}/posts/${postId()}`, { data });
   }
+
+  updatePostByStringId(postId:string, data: string): Observable<void> {
+    return this.http.put<void>(`${this.basePath}/posts/${postId}`, { data });
+  }
 }

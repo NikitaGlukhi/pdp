@@ -103,6 +103,15 @@ export class MainPageComponent implements OnInit, OnDestroy {
     return user?.nickname || 'N/A';
   }
 
+  markPostFeatured(data: { postId: string, isFeatured: boolean }): void {
+    const post = this.posts?.find(post => post.id === data.postId);
+
+    if (post) {
+      post.isFeatured = data.isFeatured;
+      this.postsApiService.updatePostByStringId(data.postId, JSON.stringify(post)).subscribe();
+    }
+  }
+
   logout(): void {
     this.authService.logout();
   }

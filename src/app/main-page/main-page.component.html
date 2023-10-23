@@ -39,6 +39,7 @@
         [userName]="getUserNicknameById(post.userId)"
         (onLike)="addLike(post.id)"
         (onDislike)="removeLike(post)"
+        (onMarkedFeatured)="markPostFeatured($event)"
       ></post-core>
     </div>
   </div>

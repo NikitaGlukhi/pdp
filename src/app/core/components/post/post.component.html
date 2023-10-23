@@ -2,7 +2,12 @@
   <div class="post-header">
     <h4><a [routerLink]="'profile/' + post.userId" [innerText]="userName"></a></h4>
 
-    <a [routerLink]="'post/' + post.id">Go to post</a>
+    <div class="post-actions">
+      <a [routerLink]="'post/' + post.id">Go to post</a>
+
+      <button class="btn btn-success" *ngIf="!post.isFeatured" (click)="markFeatured(post.id, true)">Set featured</button>
+      <button class="btn btn-danger" *ngIf="post.isFeatured" (click)="markFeatured(post.id, false)">Set not featured</button>
+    </div>
   </div>
 
   <div class="post-body">
