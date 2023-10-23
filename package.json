@@ -7,7 +7,15 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "backend:start": "node backend/app.js"
+    "backend:start": "node backend/app.js",
+    "prepush": "npm run build"
+  },
+  "prepush": {
+    "coloredOutput": true,
+    "tasks": [
+      "sh ./pre-push.sh"
+    ],
+    "onDirtyState": "ask"
   },
   "private": true,
   "dependencies": {
