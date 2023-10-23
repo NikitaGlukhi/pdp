@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 
 import { CoreComponentsModule } from '../core/components';
 import { SetUnderlineDirective } from '../core/directives';
+import { HighlightedPostsPipe } from '../core/pipes';
 import { MainPageComponent } from './main-page.component';
 import { MainPageRoutingModule } from './main-page-routing.module';
 import { PostDetailsComponent } from './components';
@@ -13,6 +14,7 @@ import { PostDetailsComponent } from './components';
     MainPageComponent,
     PostDetailsComponent,
     SetUnderlineDirective,
+    HighlightedPostsPipe,
   ],
   imports: [
     CommonModule,

@@ -7,13 +7,39 @@
 <div class="posts">
   <input type="text" [ngModel]="searchData" class="form-control" placeholder="Search posts by username or post content" (ngModelChange)="searchPosts($event)" />
 
-  <div *ngFor="let post of posts">
-    <post-core
-      [post]="post"
-      [currentUserId]="post.userId"
-      [userName]="getUserNicknameById(post.userId)"
-      (onLike)="addLike(post.id)"
-      (onDislike)="removeLike(post)"
-    ></post-core>
+  <div class="btn-group mt-4" role="group" aria-label="Basic example">
+    <button
+      type="button"
+      class="btn"
+      (click)="selectedOption = sortOptions.likes"
+      [class.btn-outline-secondary]="selectedOption !== sortOptions.likes"
+      [class.btn-secondary]="selectedOption === sortOptions.likes"
+    >Sort by likes</button>
+    <button
+      type="button"
+      class="btn"
+      (click)="selectedOption = sortOptions.featured"
+      [class.btn-outline-secondary]="selectedOption !== sortOptions.featured"
+      [class.btn-secondary]="selectedOption === sortOptions.featured"
+    >Featured</button>
+    <button
+      type="button"
+      class="btn"
+      (click)="selectedOption = sortOptions.all"
+      [class.btn-outline-secondary]="selectedOption !== sortOptions.all"
+      [class.btn-secondary]="selectedOption === sortOptions.all"
+    >All</button>
+  </div>
+
+  <div *ngIf="posts">
+    <div *ngFor="let post of posts | highlightedPosts : selectedOption" class="mt-4">
+      <post-core
+        [post]="post"
+        [currentUserId]="post.userId"
+        [userName]="getUserNicknameById(post.userId)"
+        (onLike)="addLike(post.id)"
+        (onDislike)="removeLike(post)"
+      ></post-core>
+    </div>
   </div>
 </div>

@@ -3,6 +3,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { tap, Subscription, switchMap } from 'rxjs';
 
 import { IAddLike, IUser } from '../core/models';
+import { SortPostOptions } from '../core/enums';
 import { FeaturedPost } from '../core/types/featured-post';
 import { StorageService, UserApiService, PostsApiService, AuthService, LikesApiService } from '../core/services';
 
@@ -15,6 +16,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
   posts?: FeaturedPost[];
   currentUser?: IUser;
   searchData?: string;
+  sortOptions = SortPostOptions;
+  selectedOption = SortPostOptions.all;
 
   private users?: IUser[];
   private allPosts?: FeaturedPost[];

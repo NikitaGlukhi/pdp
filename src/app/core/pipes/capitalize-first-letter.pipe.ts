@@ -1,7 +1,7 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, OnChanges, PipeTransform, SimpleChanges } from '@angular/core';
 
 @Pipe({name: 'capitalizeFirstLetter'})
-export class CapitalizeFirstLetterPipe implements PipeTransform {
+export class CapitalizeFirstLetterPipe implements OnChanges, PipeTransform {
   transform(value: string): string {
     const sentences = value.replace(/([.?!])\s*(?=[A-Z])/g, "$1|").split('|')
       .map(item => item.trim())
@@ -12,5 +12,9 @@ export class CapitalizeFirstLetterPipe implements PipeTransform {
 
       return firstLetter.toUpperCase() + sentence.slice(1);
     }).join(' ');
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    console.log('capitalizeFirstLetter', changes);
   }
 }
