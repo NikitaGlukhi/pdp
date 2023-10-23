@@ -1,7 +1,6 @@
-describe('Test login page', () => {
-  it('passes', () => {
+describe('Test Login page', () => {
+  it('successfully loads', () => {
     cy.visit('http://localhost:4300');
-
     cy.url().should('include', '/auth');
 
     cy.get('.enter-login').type('Nikita_Glukhi');
