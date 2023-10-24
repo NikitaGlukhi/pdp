@@ -56,14 +56,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
       }
     }
 
-    const postsSub = this.postsApiService.getAll()
-      .pipe(
-        tap(posts => {
-          this.allPosts = posts;
-          this.posts = posts;
-        })
-      ).subscribe();
-    this.subscriptions.add(postsSub);
+    this.getAllPosts();
 
     const usersSub = this.userApiService.getAll()
       .pipe(
@@ -110,6 +103,16 @@ export class MainPageComponent implements OnInit, OnDestroy {
       post.isFeatured = data.isFeatured;
       this.postsApiService.updatePostByStringId(data.postId, JSON.stringify(post)).subscribe();
     }
+  }
+
+  getAllPosts(): void {
+    this.postsApiService.getAll()
+      .pipe(
+        tap(posts => {
+          this.allPosts = posts;
+          this.posts = posts;
+        })
+      ).subscribe();
   }
 
   logout(): void {

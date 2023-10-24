@@ -1,25 +1,21 @@
-## Levels of abstraction
-You can find User, Post and Likes components in `src/app/core/components` an how they used in app in `src/app/user-profile` and `src/app/main-page` folders
+## E2E
+Started learning how to implement e2e tests and Cypress. You can find it in `cypress` folder
 
-## Composition
-UserProfile component - `src/app/user-profile/user-profile.component.ts`
+## Push trigger
+Added pre-push trigger using `husky`
 
-## Prototypes in JS / by reference vs copying
-An example of using prototype and demonstrating difference between using data as reference or value is in `src/app/core/components/user/user.component.ts`
+## Types
+1. It's easier to manage data types because no need to constantly keep inheritance in mind and you don't need to afraid, that changes in one of the type could break everything.
+2. Without using inheritance we can mix different types, which can be applied universally without fear of problems that may arise when changing anything in the inheritance hierarchy.
 
-## Interfaces
-All interfaces you can find in `src/app/core/models` 
+## Pipes
+Created Pure Pipe - `src/app/core/pipes/capitalize-first-letter.pipe.ts` and Impure Pipe - `src/app/core/pipes/highlighted-posts.pipe.ts`
+Also added 'Refresh button' in `src/app/main-page/main-page.component.html`
 
-## Classes and Inheritance
-An example of inheritance you can find in `src/app/core/models` where BaseEntity is a parent class for ILike, IPost and IUser
+1. Pure pipes are watching for changes of value, that passes to them. In Impure pipes changes detected when reference value was changed.
+2. Pure pipes detect changes only when input value was changed. It's good for app optimization. Also it avoid us to create a lot of code dublication whan we want to make some action with primitive value in different parts of application
+3. 
 
-## Introduction to Web Storages
-You can find storage service with using local/session storages and cookies in `src/app/core/services/storage.service.ts`
-
-## Cookies, Local/Session storages
-LocalStorage is a single storage for one domain in single browser, that's why it's the best way to store data for user preferences 
-Session storage is the same as LocalStorage, but it will be able only for single tab and will be empty after tab was closed. This is the good way to implement different scenarios whe user works in parallel tabs
-Cookies is a good way to remember user activity in application and apply specific users's data in new browser 
-
-## Bind/Call/Apply
-TYhe example of using - `src/app/core/components/post/post.component.ts`
+## Git flow - revert pushed commit
+1. Revert to previous commit
+2. Push new commit with reverted changes

@@ -7,28 +7,32 @@
 <div class="posts">
   <input type="text" [ngModel]="searchData" class="form-control search-data" placeholder="Search posts by username or post content" (ngModelChange)="searchPosts($event)" />
 
-  <div class="btn-group mt-4" role="group" aria-label="Basic example">
-    <button
-      type="button"
-      class="btn"
-      (click)="selectedOption = sortOptions.likes"
-      [class.btn-outline-secondary]="selectedOption !== sortOptions.likes"
-      [class.btn-secondary]="selectedOption === sortOptions.likes"
-    >Sort by likes</button>
-    <button
-      type="button"
-      class="btn"
-      (click)="selectedOption = sortOptions.featured"
-      [class.btn-outline-secondary]="selectedOption !== sortOptions.featured"
-      [class.btn-secondary]="selectedOption === sortOptions.featured"
-    >Featured</button>
-    <button
-      type="button"
-      class="btn"
-      (click)="selectedOption = sortOptions.all"
-      [class.btn-outline-secondary]="selectedOption !== sortOptions.all"
-      [class.btn-secondary]="selectedOption === sortOptions.all"
-    >All</button>
+  <div class="d-flex flex-row justify-content-between align-items-center">
+    <div class="btn-group mt-4" role="group" aria-label="Basic example">
+      <button
+        type="button"
+        class="btn"
+        (click)="selectedOption = sortOptions.likes"
+        [class.btn-outline-secondary]="selectedOption !== sortOptions.likes"
+        [class.btn-secondary]="selectedOption === sortOptions.likes"
+      >Sort by likes</button>
+      <button
+        type="button"
+        class="btn"
+        (click)="selectedOption = sortOptions.featured"
+        [class.btn-outline-secondary]="selectedOption !== sortOptions.featured"
+        [class.btn-secondary]="selectedOption === sortOptions.featured"
+      >Featured</button>
+      <button
+        type="button"
+        class="btn"
+        (click)="selectedOption = sortOptions.all"
+        [class.btn-outline-secondary]="selectedOption !== sortOptions.all"
+        [class.btn-secondary]="selectedOption === sortOptions.all"
+      >All</button>
+    </div>
+
+    <button class="btn btn-success" (click)="getAllPosts()">Refresh posts</button>
   </div>
 
   <div *ngIf="posts">

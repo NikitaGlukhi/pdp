@@ -1,11 +1,16 @@
-import {Pipe, OnChanges, PipeTransform, SimpleChanges} from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
 import { FeaturedPost } from '../types/featured-post';
 import { SortPostOptions } from '../enums';
 
-@Pipe({name: 'highlightedPosts'})
-export class HighlightedPostsPipe implements OnChanges, PipeTransform {
+@Pipe({
+  name: 'highlightedPosts',
+  pure: false,
+})
+export class HighlightedPostsPipe implements PipeTransform {
   transform(value: FeaturedPost[], sortOption: SortPostOptions): FeaturedPost[] {
+    console.log('highlightedPosts');
+
     switch (sortOption) {
       case SortPostOptions.likes:
         return value.sort((a, b) => b.likes.length - a.likes.length);
@@ -14,9 +19,5 @@ export class HighlightedPostsPipe implements OnChanges, PipeTransform {
       default:
         return value;
     }
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    console.log('highlightedPosts', changes);
   }
 }
