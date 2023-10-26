@@ -8,7 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "backend:start": "node backend/app.js",
-    "cypress:open": "cypress open"
+    "test:e2e": "cypress open"
   },
   "private": true,
   "dependencies": {
