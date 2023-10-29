@@ -41,7 +41,7 @@
         [post]="post"
         [currentUserId]="post.userId"
         [userName]="getUserNicknameById(post.userId)"
-        (onLike)="addLike(post.id)"
+        (onLike)="addLikeValue(post.id)"
         (onDislike)="removeLike(post)"
         (onMarkedFeatured)="markPostFeatured($event)"
       ></post-core>

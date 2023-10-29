@@ -1,16 +1,18 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 
-import { tap, Subscription, switchMap } from 'rxjs';
+import { Subscription, tap } from 'rxjs';
+import { v4 as uuidv4 } from 'uuid';
 
 import { IAddLike, IUser } from '../core/models';
 import { SortPostOptions } from '../core/enums';
 import { FeaturedPost } from '../core/types/featured-post';
-import { StorageService, UserApiService, PostsApiService, AuthService, LikesApiService } from '../core/services';
+import { AuthService, LikesApiService, PostsApiService, StorageService, UserApiService } from '../core/services';
 
 @Component({
   selector: 'main-page',
   templateUrl: './main-page.component.html',
   styleUrls: ['./main-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MainPageComponent implements OnInit, OnDestroy {
   posts?: FeaturedPost[];
@@ -31,6 +33,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
     private readonly postsApiService: PostsApiService,
     private readonly authService: AuthService,
     private readonly likesApiService: LikesApiService,
+    private readonly cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -45,7 +48,9 @@ export class MainPageComponent implements OnInit, OnDestroy {
         for (const user of users) {
           const userPosts = this.allPosts?.filter(post => post.userId === user.id);
           if (userPosts) {
-            this.posts.push(...userPosts)
+            this.posts.push(...userPosts);
+
+            this.cdr.detectChanges();
           }
         }
       }
@@ -53,6 +58,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
       const postsByText = this.allPosts?.filter(post => post.text?.includes(data));
       if (postsByText && postsByText.length > 0) {
         this.posts.push(...postsByText);
+
+        this.cdr.detectChanges();
       }
     }
 
@@ -63,6 +70,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
         tap(users => {
           this.users = users;
           this.currentUser = this.users.find(user => user.id === token);
+
+          this.cdr.detectChanges();
         })
       ).subscribe();
     this.subscriptions.add(usersSub);
@@ -75,6 +84,53 @@ export class MainPageComponent implements OnInit, OnDestroy {
     }
 
     this.likesApiService.addNewLike(JSON.stringify(data)).subscribe();
+    this.cdr.detectChanges(); // value won't be updated without detectChanges() method on ChangeDetectionStrategy.OnPush
+  }
+
+  addLikeValue(postId: string): void {
+    const index = this.posts?.findIndex(post => post.id === postId) || -1;
+
+    if (this.posts && index >= 0) {
+      this.posts[index].likes.push({
+        id: uuidv4(),
+        postId,
+        likedBy: this.currentUser?.id as string,
+      });
+
+      const likeWithoutId: IAddLike = {
+        postId,
+        userId: this.currentUser?.id as string,
+      };
+
+      this.likesApiService.addNewLike(JSON.stringify(likeWithoutId)).subscribe();
+    }
+  }
+
+  addLikeReference(postId: string): void {
+    const postToUpdate = this.posts?.find(post => post.id === postId);
+
+    if (this.posts && postToUpdate) {
+      postToUpdate.likes.push({
+        id: uuidv4(),
+        postId,
+        likedBy: this.currentUser?.id as string,
+      });
+
+      this.posts.map(post => {
+        if (post.id === postToUpdate.id) {
+          return postToUpdate;
+        }
+
+        return post;
+      });
+
+      const likeWithoutId: IAddLike = {
+        postId,
+        userId: this.currentUser?.id as string,
+      };
+
+      this.likesApiService.addNewLike(JSON.stringify(likeWithoutId)).subscribe();
+    }
   }
 
   removeLike(post: FeaturedPost): void {
@@ -83,6 +139,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
     if (like) {
       this.likesApiService.removeLike(like.id).subscribe();
     }
+
+    this.cdr.detectChanges();
   }
 
   searchPosts(searchString: string): void {
@@ -103,6 +161,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
       post.isFeatured = data.isFeatured;
       this.postsApiService.updatePostByStringId(data.postId, JSON.stringify(post)).subscribe();
     }
+
+    this.cdr.detectChanges();
   }
 
   getAllPosts(): void {
@@ -111,6 +171,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
         tap(posts => {
           this.allPosts = posts;
           this.posts = posts;
+
+          this.cdr.detectChanges();
         })
       ).subscribe();
   }

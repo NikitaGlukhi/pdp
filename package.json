@@ -43,6 +43,8 @@
     "@types/graceful-fs": "^4.1.6",
     "@types/jasmine": "~4.3.0",
     "@types/jsonwebtoken": "^9.0.2",
+    "@types/node": "^20.8.9",
+    "@types/uuid": "^9.0.6",
     "cypress": "^13.3.2",
     "husky": "^8.0.3",
     "jasmine-core": "~4.6.0",
