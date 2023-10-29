@@ -1,0 +1,11 @@
+<div class="p-4">
+  <button class="btn btn-success" (click)="makeRequest()">Make request</button>
+
+  <div class="w-100 pt-2" *ngIf="code">
+    <ngb-alert [dismissible]="false" type="warning">
+      <div class="d-flex flex-row align-items-center justify-content-start gap-1">
+        <p [innerText]="code" class="mb-0"></p>: <p [innerText]="text" class="mb-0"></p>
+      </div>
+    </ngb-alert>
+  </div>
+</div>

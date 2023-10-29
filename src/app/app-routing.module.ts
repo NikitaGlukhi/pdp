@@ -22,6 +22,11 @@ const routes: Routes = [
     canActivate: [isAuthenticated]
   },
   {
+    path: 'status-codes',
+    loadChildren: () => import('./status-codes/status-codes.module')
+      .then(module => module.StatusCodesModule),
+  },
+  {
     path: '**',
     redirectTo: '',
   },
