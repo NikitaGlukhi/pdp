@@ -7,6 +7,7 @@ import { ILike } from '../../models';
 })
 export class LikesComponent {
   @Input() likes?: ILike[];
+  @Input() likesCount?: number;
   @Input() likedByUser: () => boolean;
 
   @Output() onLikedOrDisliked = new EventEmitter<boolean>();

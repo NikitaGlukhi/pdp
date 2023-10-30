@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
   const allPosts = result.posts.map(post => {
     const likes = result.likes.filter(like => like.postId === post.id);
 
-    return { ...post, likes };
+    return { ...post, likes, likesCount: likes.length };
   });
   const users = result.users.map(user => {
     const posts = allPosts.filter(post => post.userId === user.id);
@@ -29,7 +29,7 @@ router.get('/:id', (req, res) => {
   const posts = allData.posts.map(post => {
     const likes = allData.likes.filter(like => like.postId === post.id);
 
-    return { ...post, likes };
+    return { ...post, likes, likesCount: likes.length };
   }).filter(post => post.userId === result.id);
 
   res.send({ ...result, posts });
@@ -44,7 +44,7 @@ router.get('/:login/:password', (req, res) => {
   const posts = allData.posts.map(post => {
     const likes = allData.likes.filter(like => like.postId === post.id);
 
-    return { ...post, likes };
+    return { ...post, likes, likesCount: likes.length };
   }).filter(post => post.userId === result.id);
 
   res.send({ ...result, posts });

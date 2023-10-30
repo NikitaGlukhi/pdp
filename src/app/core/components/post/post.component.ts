@@ -20,6 +20,7 @@ export class PostComponent {
   @Input() post?: FeaturedPost;
   @Input() currentUserId?: string;
   @Input() userName?: string;
+  @Input() displayLikesCount = false;
 
   @Output() onLike = new EventEmitter<void>();
   @Output() onDislike = new EventEmitter<void>();

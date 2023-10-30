@@ -5,5 +5,6 @@ export type PostImage = {
   imgUrl: string;
   text?: string;
   userId: string;
+  likesCount: number;
   likes: ILike[];
 };

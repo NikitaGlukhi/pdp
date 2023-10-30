@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { Subscription, tap } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 
-import { IAddLike, IUser } from '../core/models';
+import {IAddLike, ILike, IUser} from '../core/models';
 import { SortPostOptions } from '../core/enums';
 import { FeaturedPost } from '../core/types/featured-post';
 import { AuthService, LikesApiService, PostsApiService, StorageService, UserApiService } from '../core/services';
@@ -12,7 +12,6 @@ import { AuthService, LikesApiService, PostsApiService, StorageService, UserApiS
   selector: 'main-page',
   templateUrl: './main-page.component.html',
   styleUrls: ['./main-page.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MainPageComponent implements OnInit, OnDestroy {
   posts?: FeaturedPost[];
@@ -78,59 +77,35 @@ export class MainPageComponent implements OnInit, OnDestroy {
   }
 
   addLike(postId: string): void {
+    if (this.posts && this.posts.length > 0) {
+      const post = this.posts.find(post => post.id === postId);
+
+      if (post) {
+        this.addLikeValue(post.likesCount);
+        // this.addLikeReference(post.likes, postId);
+      }
+    }
+
     const data: IAddLike = {
       postId,
       userId: this.currentUser?.id as string,
     }
 
     this.likesApiService.addNewLike(JSON.stringify(data)).subscribe();
-    this.cdr.detectChanges(); // value won't be updated without detectChanges() method on ChangeDetectionStrategy.OnPush
   }
 
-  addLikeValue(postId: string): void {
-    const index = this.posts?.findIndex(post => post.id === postId) || -1;
+  addLikeValue(likesCount: number): void {
+    likesCount += 1;
 
-    if (this.posts && index >= 0) {
-      this.posts[index].likes.push({
-        id: uuidv4(),
-        postId,
-        likedBy: this.currentUser?.id as string,
-      });
-
-      const likeWithoutId: IAddLike = {
-        postId,
-        userId: this.currentUser?.id as string,
-      };
-
-      this.likesApiService.addNewLike(JSON.stringify(likeWithoutId)).subscribe();
-    }
+    console.log(likesCount);
   }
 
-  addLikeReference(postId: string): void {
-    const postToUpdate = this.posts?.find(post => post.id === postId);
-
-    if (this.posts && postToUpdate) {
-      postToUpdate.likes.push({
-        id: uuidv4(),
-        postId,
-        likedBy: this.currentUser?.id as string,
-      });
-
-      this.posts.map(post => {
-        if (post.id === postToUpdate.id) {
-          return postToUpdate;
-        }
-
-        return post;
-      });
-
-      const likeWithoutId: IAddLike = {
-        postId,
-        userId: this.currentUser?.id as string,
-      };
-
-      this.likesApiService.addNewLike(JSON.stringify(likeWithoutId)).subscribe();
-    }
+  addLikeReference(likes: ILike[], postId: string): void {
+    likes.push({
+      id: uuidv4(),
+      postId,
+      likedBy: this.currentUser?.id as string,
+    });
   }
 
   removeLike(post: FeaturedPost): void {

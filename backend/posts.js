@@ -19,7 +19,7 @@ router.get('/', (req, res) => {
   const result = posts.map(post => {
     const likes = allData.get('likes').filter(like => like.postId === post.id);
 
-    return { ...post, likes };
+    return { ...post, likes, likesCount: likes.length };
   })
 
   res.send(result);
@@ -33,7 +33,7 @@ router.get('/:id', (req, res) => {
   const result = posts.find(post => post.id === id);
   const resultLikes = allData.get('likes').filter(like => like.postId === result.id)
 
-  res.send({ ...result, likes: resultLikes });
+  res.send({ ...result, likes: resultLikes, likesCount: resultLikes.length });
 });
 
 router.put('/:id', (req, res) => {

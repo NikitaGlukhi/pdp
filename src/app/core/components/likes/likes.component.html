@@ -1,5 +1,5 @@
 <div class="d-flex flex-row align-items-center like w-100">
-  <p class="mb-0">Likes: {{ likes?.length }}</p>
+  <p class="mb-0">Likes: {{ likesCount || likes?.length || 0 }}</p>
 
   <button
     class="btn"

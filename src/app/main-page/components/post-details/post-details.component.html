@@ -4,6 +4,7 @@
 
     <likes-core
       [likes]="post?.likes"
+      [likesCount]="post?.likesCount"
       [likedByUser]="likedByUser"
       (onLikedOrDisliked)="$event ? addLike() : removeLike()"
     ></likes-core>
