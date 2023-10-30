@@ -7,7 +7,7 @@ import { codes } from '../core/constants';
 
 @Injectable()
 export class StatusCodesService {
-  private readonly basePath = 'https://httpbin.org';
+  private readonly basePath = 'http://httpbin.org';
 
   constructor(private readonly http: HttpClient) {}
 
