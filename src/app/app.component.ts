@@ -6,5 +6,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'pdp-pre-push-test';
+  title = 'pdp-pre-push-test 2';
 }
