@@ -1,0 +1,19 @@
+<div class="p-5">
+  <h3>Add new post</h3>
+
+  <div *ngIf="form">
+    <form [formGroup]="form">
+      <textarea type="text" formControlName="text" class="form-control" placeholder="Enter post text" required></textarea>
+
+      <div class="input-group">
+        <label for="featured" class="mr-2">Featured</label>
+        <input id="featured" class="ml-2" type="checkbox" formControlName="featured" required />
+      </div>
+    </form>
+
+    <div class="d-flex flex-row align-items-center justify-content-end">
+      <button class="btn btn-success" (click)="submit()" [disabled]="!form.valid">Add</button>
+      <button class="btn btn-danger" (click)="close()">Cancel</button>
+    </div>
+  </div>
+</div>

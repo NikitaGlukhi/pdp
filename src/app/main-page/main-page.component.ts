@@ -1,17 +1,21 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 
-import { Subscription, tap } from 'rxjs';
+import { Subscription, switchMap, tap } from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { v4 as uuidv4 } from 'uuid';
 
-import {IAddLike, ILike, IUser} from '../core/models';
+import { IAddLike, ILike, IUser } from '../core/models';
 import { SortPostOptions } from '../core/enums';
+import { PostFactory } from '../core/factories';
 import { FeaturedPost } from '../core/types/featured-post';
 import { AuthService, LikesApiService, PostsApiService, StorageService, UserApiService } from '../core/services';
+import {AddPostComponent} from './modals';
 
 @Component({
   selector: 'main-page',
   templateUrl: './main-page.component.html',
   styleUrls: ['./main-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MainPageComponent implements OnInit, OnDestroy {
   posts?: FeaturedPost[];
@@ -22,6 +26,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
   private users?: IUser[];
   private allPosts?: FeaturedPost[];
+  private factory = new PostFactory();
+
   /* Initialize worker */
   private worker = new Worker(new URL('../core/workers/search-posts.worker', import.meta.url));
   private readonly subscriptions = new Subscription();
@@ -33,6 +39,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
     private readonly authService: AuthService,
     private readonly likesApiService: LikesApiService,
     private readonly cdr: ChangeDetectorRef,
+    private readonly modalService: NgbModal,
   ) {}
 
   ngOnInit(): void {
@@ -74,6 +81,21 @@ export class MainPageComponent implements OnInit, OnDestroy {
         })
       ).subscribe();
     this.subscriptions.add(usersSub);
+  }
+
+  addPost(): void {
+    const modalRef = this.modalService.open(AddPostComponent, { backdrop: 'static' });
+    const instance = modalRef.componentInstance as AddPostComponent;
+
+    instance.response
+      .pipe(
+        switchMap(({ text, isFeatured }) => {
+          const newPost = this.factory.createPost();
+          const userId = this.currentUser?.id || '';
+
+          return this.postsApiService.addPost(newPost.create(text, userId, isFeatured));
+        })
+      ).subscribe();
   }
 
   addLike(postId: string): void {

@@ -27,4 +27,8 @@ export class PostsApiService {
   updatePostByStringId(postId:string, data: string): Observable<void> {
     return this.http.put<void>(`${this.basePath}/posts/${postId}`, { data });
   }
+
+  addPost(data: Omit<FeaturedPost, 'likes'>): Observable<void> {
+    return this.http.post<void>(`${this.basePath}`, { ...data });
+  }
 }
