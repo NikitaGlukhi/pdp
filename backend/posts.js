@@ -58,4 +58,23 @@ router.put('/:id', (req, res) => {
   }
 });
 
+router.post('/', (req, res) => {
+  const buffer = getAllData();
+  const allData = JSON.parse(Buffer.from(buffer, 'base64').toString('utf8'));
+  const pathToFile = path.join(__dirname, './db.json');
+  allData.posts.push({ ...req.body, createdAt: Date.now() });
+
+  try {
+    fs.writeFile(pathToFile, JSON.stringify(allData), () => {
+      console.log('New post created!');
+    });
+
+    res.sendStatus(200);
+  } catch (err) {
+    console.log(err.message);
+
+    res.sendStatus(500);
+  }
+});
+
 module.exports = router;

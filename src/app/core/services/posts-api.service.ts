@@ -29,6 +29,6 @@ export class PostsApiService {
   }
 
   addPost(data: Omit<FeaturedPost, 'likes'>): Observable<void> {
-    return this.http.post<void>(`${this.basePath}`, { ...data });
+    return this.http.post<void>(`${this.basePath}/posts`, { ...data });
   }
 }

@@ -20,13 +20,12 @@ export class AddPostComponent implements OnInit {
   ngOnInit(): void {
     this.form = this.formBuilder.group({
       text: ['', Validators.required],
-      featured: [false, Validators.required],
+      featured: [false],
     });
   }
 
   submit(): void {
-    const value = this.form?.value();
-
+    const value = this.form?.value;
     this.response.emit({ text: value.text, isFeatured: value.featured });
     this.close();
   }
