@@ -8,8 +8,25 @@ function getAllData() {
   return fs.readFileSync(path.join(__dirname, './db.json'), { encoding: 'base64' });
 }
 
-function createPostUpdatedMessage(postId) {
-  return `Post ${postId} updated`;
+function postConsoleMessage(userId, postId, isNew = false) {
+  const buffer = getAllData();
+  const allData = Map(JSON.parse(Buffer.from(buffer, 'base64').toString('utf8')));
+  const users = allData.get('users');
+  const user = users.find(user => user.id === userId);
+
+  function postCreated() {
+    console.log(`User ${user.nickname} created new post!`);
+  }
+
+  function postUpdated() {
+    console.log(`User ${user.nickname} updated ${postId} post`);
+  }
+
+  if (isNew) {
+    postCreated();
+  } else {
+    postUpdated();
+  }
 }
 
 router.get('/', (req, res) => {
@@ -47,7 +64,7 @@ router.put('/:id', (req, res) => {
 
   try {
     fs.writeFile(pathToFile, JSON.stringify(allData), () => {
-      console.log(createPostUpdatedMessage(id));
+      postConsoleMessage(data.userId, id);
     });
 
     res.sendStatus(200);
@@ -66,7 +83,7 @@ router.post('/', (req, res) => {
 
   try {
     fs.writeFile(pathToFile, JSON.stringify(allData), () => {
-      console.log('New post created!');
+      postConsoleMessage(req.body.userId, req.body.id, true);
     });
 
     res.sendStatus(200);
