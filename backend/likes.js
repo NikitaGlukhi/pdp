@@ -33,7 +33,7 @@ router.post('/', (req, res) => {
       console.log('New like added');
     });
 
-    res.sendStatus(200);
+    res.send('OK');
   } catch (err) {
     console.log(err.message);
 
@@ -63,7 +63,7 @@ router.delete('/:likeId', (req, res) => {
       console.log('Like removed');
     });
 
-    res.sendStatus(200);
+    res.send('OK');
   } catch (err) {
     console.log(err.message);
 

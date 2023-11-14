@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 
-import { Subscription, switchMap, tap } from 'rxjs';
+import {Subscription, switchMap, concatMap, tap, Observable} from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -94,7 +94,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
           const userId = this.currentUser?.id || '';
 
           return this.postsApiService.addPost(newPost.create(text, userId, isFeatured));
-        })
+        }),
+        concatMap(() => this.loadAllPosts()),
       ).subscribe();
   }
 
@@ -118,8 +119,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
   addLikeValue(likesCount: number): void {
     likesCount += 1;
-
-    console.log(likesCount);
   }
 
   addLikeReference(likes: ILike[], postId: string): void {
@@ -134,7 +133,9 @@ export class MainPageComponent implements OnInit, OnDestroy {
     const like = post.likes.find(like => like.likedBy === this.currentUser?.id);
 
     if (like) {
-      this.likesApiService.removeLike(like.id).subscribe();
+      this.likesApiService.removeLike(like.id)
+        .pipe(concatMap(() => this.loadAllPosts()))
+        .subscribe();
     }
 
     this.cdr.detectChanges();
@@ -181,5 +182,17 @@ export class MainPageComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.worker.terminate();
     this.subscriptions.unsubscribe();
+  }
+
+  private loadAllPosts(): Observable<FeaturedPost[]> {
+    return this.postsApiService.getAll()
+      .pipe(
+        tap(posts => {
+          this.allPosts = posts;
+          this.posts = posts;
+
+          this.cdr.detectChanges();
+        })
+      )
   }
 }

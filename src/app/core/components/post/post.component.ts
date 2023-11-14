@@ -40,12 +40,16 @@ export class PostComponent {
 
   markFeatured = (postId: string, isFeatured: boolean): void => this.onMarkedFeatured.emit({ postId, isFeatured });
 
-  isImagePost(post: FeaturedPost): boolean {
-    return !!(<FeaturedImagePost>post).imgUrl;
+  isImagePost(post: FeaturedPost): post is FeaturedImagePost {
+    return (post as FeaturedImagePost).imgUrl !== undefined;
   }
 
-  getImgUrl(post: FeaturedPost): string {
-    return (<FeaturedImagePost>post).imgUrl;
+  getImgUrl(post: FeaturedPost): string  {
+    if ('imgUrl' in post) {
+      return post.imgUrl;
+    }
+
+    return '';
   }
 
   addLike = (): void => this.onLike.emit();
