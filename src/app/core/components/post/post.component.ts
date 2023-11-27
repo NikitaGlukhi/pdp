@@ -54,7 +54,9 @@ export class PostComponent {
   }
 
   @Liked()
-  addLike = (): void => this.onLike.emit();
+  addLike(post: FeaturedPost, userId: string): void {
+    this.onLike.emit();
+  }
 
   removeLike = (): void => this.onDislike.emit();
 }

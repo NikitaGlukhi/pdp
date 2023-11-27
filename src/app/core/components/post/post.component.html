@@ -1,4 +1,4 @@
-<div class="post" *ngIf="post">
+<div class="post" *ngIf="post && currentUserId">
   <div class="post-header">
     <h4><a [routerLink]="'profile/' + post.userId" [innerText]="userName"></a></h4>
 
@@ -22,7 +22,7 @@
         [likes]="post.likes"
         [likesCount]="post.likesCount"
         [likedByUser]="likedByUser"
-        (onLikedOrDisliked)="$event ? addLike() : removeLike()"
+        (onLikedOrDisliked)="$event ? addLike(post, currentUserId) : removeLike()"
       ></likes-core>
 
       <button class="btn btn-info" (click)="countTotalLikes()">Show total likes</button>
