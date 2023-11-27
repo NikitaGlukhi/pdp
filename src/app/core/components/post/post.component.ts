@@ -54,7 +54,7 @@ export class PostComponent {
   }
 
   @Liked()
-  addLike(post: FeaturedPost, userId: string): void {
+  addLike(post: FeaturedPost): void {
     this.onLike.emit();
   }
 

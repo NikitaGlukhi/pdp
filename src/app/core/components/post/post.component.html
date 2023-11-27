@@ -22,7 +22,7 @@
         [likes]="post.likes"
         [likesCount]="post.likesCount"
         [likedByUser]="likedByUser"
-        (onLikedOrDisliked)="$event ? addLike(post, currentUserId) : removeLike()"
+        (onLikedOrDisliked)="$event ? addLike(post) : removeLike()"
       ></likes-core>
 
       <button class="btn btn-info" (click)="countTotalLikes()">Show total likes</button>
