@@ -3,7 +3,6 @@ const { v4 } = require('uuid');
 const fs = require('fs');
 const path = require('path');
 const { Map, fromJS } = require('immutable');
-const {all} = require("express/lib/application");
 const router = express.Router();
 
 function getAllData() {
@@ -33,7 +32,8 @@ router.post('/', (req, res) => {
       console.log('New like added');
     });
 
-    res.send('OK');
+    res.contentType('text/plain');
+    res.sendStatus(200);
   } catch (err) {
     console.log(err.message);
 
@@ -63,7 +63,8 @@ router.delete('/:likeId', (req, res) => {
       console.log('Like removed');
     });
 
-    res.send('OK');
+    res.setHeader('Content-Type', 'text/plain');
+    res.sendStatus(200);
   } catch (err) {
     console.log(err.message);
 

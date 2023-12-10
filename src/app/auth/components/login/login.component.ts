@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 
 import { tap } from 'rxjs';
 
-import {AuthService, UserApiService} from '../../../core/services';
+import { AuthService } from '../../../core/services';
 
 @Component({
   selector: 'login',

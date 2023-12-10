@@ -10,6 +10,7 @@ import { PostFactory } from '../core/factories';
 import { FeaturedPost } from '../core/types/featured-post';
 import { postMixin } from '../core/mixins';
 import { PostCommon } from '../core/components';
+import { PostsStateService } from '../core/states';
 import { AuthService, LikesApiService, PostsApiService, StorageService, UserApiService } from '../core/services';
 import { AddPostComponent } from './modals';
 
@@ -41,6 +42,7 @@ export class MainPageComponent extends postMixin(PostCommon) implements OnInit, 
     private readonly cdr: ChangeDetectorRef,
     private readonly modalService: NgbModal,
     private readonly http: HttpClient,
+    private readonly postsStateService: PostsStateService,
   ) {
     super(
       new LikesApiService(http),
@@ -88,7 +90,7 @@ export class MainPageComponent extends postMixin(PostCommon) implements OnInit, 
 
           return this.postsApiService.addPost(newPost.create(text, userId, isFeatured));
         }),
-        concatMap(() => this.loadAllPosts()),
+        concatMap(() => this.postsStateService.load()),
       ).subscribe();
   }
 
@@ -117,7 +119,7 @@ export class MainPageComponent extends postMixin(PostCommon) implements OnInit, 
   }
 
   private loadAllPosts(): Observable<FeaturedPost[]> {
-    return this.postsApiService.getAll()
+    return this.postsStateService.selectAll()
       .pipe(
         tap(posts => {
           this.allPosts = posts;

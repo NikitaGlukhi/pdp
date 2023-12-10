@@ -41,6 +41,8 @@
     "@angular/cli": "~16.2.1",
     "@angular/compiler-cli": "^16.2.0",
     "@angular/localize": "^16.2.0",
+    "@datorama/akita": "^8.0.1",
+    "@datorama/akita-ngdevtools": "^7.0.0",
     "@types/graceful-fs": "^4.1.6",
     "@types/jasmine": "~4.3.0",
     "@types/jsonwebtoken": "^9.0.2",
