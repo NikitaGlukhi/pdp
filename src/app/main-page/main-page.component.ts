@@ -1,15 +1,17 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
-import {Subscription, switchMap, concatMap, tap, Observable} from 'rxjs';
+import { Subscription, switchMap, concatMap, tap, Observable } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { v4 as uuidv4 } from 'uuid';
 
-import { IAddLike, ILike, IUser } from '../core/models';
+import { IUser } from '../core/models';
 import { SortPostOptions } from '../core/enums';
 import { PostFactory } from '../core/factories';
 import { FeaturedPost } from '../core/types/featured-post';
+import { postMixin } from '../core/mixins';
+import { PostCommon } from '../core/components';
 import { AuthService, LikesApiService, PostsApiService, StorageService, UserApiService } from '../core/services';
-import {AddPostComponent} from './modals';
+import { AddPostComponent } from './modals';
 
 @Component({
   selector: 'main-page',
@@ -17,7 +19,7 @@ import {AddPostComponent} from './modals';
   styleUrls: ['./main-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MainPageComponent implements OnInit, OnDestroy {
+export class MainPageComponent extends postMixin(PostCommon) implements OnInit, OnDestroy {
   posts?: FeaturedPost[];
   currentUser?: IUser;
   searchData?: string;
@@ -35,12 +37,16 @@ export class MainPageComponent implements OnInit, OnDestroy {
   constructor(
     private readonly lsService: StorageService,
     private readonly userApiService: UserApiService,
-    private readonly postsApiService: PostsApiService,
     private readonly authService: AuthService,
-    private readonly likesApiService: LikesApiService,
     private readonly cdr: ChangeDetectorRef,
     private readonly modalService: NgbModal,
-  ) {}
+    private readonly http: HttpClient,
+  ) {
+    super(
+      new LikesApiService(http),
+      new PostsApiService(http),
+    );
+  }
 
   ngOnInit(): void {
     const token = this.lsService.getData('auth-token');
@@ -99,48 +105,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
       ).subscribe();
   }
 
-  addLike(postId: string): void {
-    if (this.posts && this.posts.length > 0) {
-      const post = this.posts.find(post => post.id === postId);
-
-      if (post) {
-        this.addLikeValue(post.likesCount);
-        // this.addLikeReference(post.likes, postId);
-      }
-    }
-
-    const data: IAddLike = {
-      postId,
-      userId: this.currentUser?.id as string,
-    }
-
-    this.likesApiService.addNewLike(JSON.stringify(data)).subscribe();
-  }
-
-  addLikeValue(likesCount: number): void {
-    likesCount += 1;
-  }
-
-  addLikeReference(likes: ILike[], postId: string): void {
-    likes.push({
-      id: uuidv4(),
-      postId,
-      likedBy: this.currentUser?.id as string,
-    });
-  }
-
-  removeLike(post: FeaturedPost): void {
-    const like = post.likes.find(like => like.likedBy === this.currentUser?.id);
-
-    if (like) {
-      this.likesApiService.removeLike(like.id)
-        .pipe(concatMap(() => this.loadAllPosts()))
-        .subscribe();
-    }
-
-    this.cdr.detectChanges();
-  }
-
   searchPosts(searchString: string): void {
     /* Trigger the worker */
     this.worker.postMessage(searchString);
@@ -152,27 +116,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
     return user?.nickname || 'N/A';
   }
 
-  markPostFeatured(data: { postId: string, isFeatured: boolean }): void {
-    const post = this.posts?.find(post => post.id === data.postId);
-
-    if (post) {
-      post.isFeatured = data.isFeatured;
-      this.postsApiService.updatePostByStringId(data.postId, JSON.stringify(post)).subscribe();
-    }
-
-    this.cdr.detectChanges();
-  }
-
   getAllPosts(): void {
-    this.postsApiService.getAll()
-      .pipe(
-        tap(posts => {
-          this.allPosts = posts;
-          this.posts = posts;
-
-          this.cdr.detectChanges();
-        })
-      ).subscribe();
+    this.loadAllPosts().subscribe();
   }
 
   logout(): void {

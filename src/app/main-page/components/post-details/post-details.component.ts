@@ -1,18 +1,21 @@
-import { Input, Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 import { tap, switchMap, Observable, Subscription, BehaviorSubject } from 'rxjs';
 
 import { LikesApiService, PostsApiService, StorageService } from '../../../core/services';
-import { IAddLike, ILike } from '../../../core/models';
+import { ILike } from '../../../core/models';
 import { FeaturedPost } from '../../../core/types/featured-post';
-import {FeaturedImagePost} from '../../../core/types/featured-image-post';
+import { FeaturedImagePost } from '../../../core/types';
+import { postMixin } from '../../../core/mixins';
+import { PostCommon } from '../../../core/components';
 
 @Component({
   selector: 'post-details',
   templateUrl: './post-details.component.html',
 })
-export class PostDetailsComponent implements OnInit, OnDestroy {
+export class PostDetailsComponent extends postMixin(PostCommon) implements OnInit, OnDestroy {
   post?: FeaturedPost;
   likes$ = new BehaviorSubject<ILike[]>([]);
   editModeEnabled = false;
@@ -23,10 +26,11 @@ export class PostDetailsComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly activatedRoute: ActivatedRoute,
-    private readonly postsApiService: PostsApiService,
-    private readonly likesApiService: LikesApiService,
     private readonly storageService: StorageService,
-  ) {}
+    private readonly http: HttpClient,
+  ) {
+    super(new LikesApiService(http), new PostsApiService(http))
+  }
 
   ngOnInit(): void {
     this.userId = this.storageService.getData('auth-token') as string;
@@ -41,24 +45,6 @@ export class PostDetailsComponent implements OnInit, OnDestroy {
     const like = this.post?.likes.find(like => like.likedBy === this.userId);
 
     return !!like;
-  }
-
-  addLike(): void {
-    const data: IAddLike = {
-      postId: this.getPostId(),
-      userId: this.userId as string,
-    }
-
-    this.likesApiService.addNewLike(JSON.stringify(data))
-      .pipe(switchMap(() => this.getLikes(this.getPostId))).subscribe();
-  }
-
-  removeLike(): void {
-    const like = this.post?.likes.find(like => like.likedBy === this.userId);
-
-    if (like) {
-      this.likesApiService.removeLike(like.id).subscribe();
-    }
   }
 
   savePost(): void {

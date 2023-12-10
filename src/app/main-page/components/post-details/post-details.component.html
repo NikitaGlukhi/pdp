@@ -6,7 +6,7 @@
       [likes]="post?.likes"
       [likesCount]="post?.likesCount"
       [likedByUser]="likedByUser"
-      (onLikedOrDisliked)="$event ? addLike() : removeLike()"
+      (onLikedOrDisliked)="$event ? addLike(post?.id, userId) : removeLike(psot, userId)"
     ></likes-core>
   </div>
 
