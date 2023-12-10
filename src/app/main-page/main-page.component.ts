@@ -53,26 +53,13 @@ export class MainPageComponent extends postMixin(PostCommon) implements OnInit, 
 
     /* Listening worker and sorting posts here */
     this.worker.onmessage = ({ data }) => {
-      this.posts = [];
       const users = this.users?.filter(user => user.nickname.includes(data));
 
-      if (users && users.length > 0) {
-        for (const user of users) {
-          const userPosts = this.allPosts?.filter(post => post.userId === user.id);
-          if (userPosts) {
-            this.posts.push(...userPosts);
-
-            this.cdr.detectChanges();
-          }
-        }
+      if (this.allPosts && users) {
+        this.posts = filterPosts(this.allPosts)(users)(data);
       }
 
-      const postsByText = this.allPosts?.filter(post => post.text?.includes(data));
-      if (postsByText && postsByText.length > 0) {
-        this.posts.push(...postsByText);
-
-        this.cdr.detectChanges();
-      }
+      this.cdr.detectChanges();
     }
 
     this.getAllPosts();
@@ -139,5 +126,22 @@ export class MainPageComponent extends postMixin(PostCommon) implements OnInit, 
           this.cdr.detectChanges();
         })
       )
+  }
+}
+
+function filterPosts(posts: FeaturedPost[]): (users: IUser[]) => (text: string) => FeaturedPost[] {
+  return function (users: IUser[]) {
+    return function (text: string) {
+      const filteredByUserPosts = []
+
+      for (const user of users) {
+        const userPosts = posts.filter(post => post.userId === user.id);
+        if (userPosts) {
+          filteredByUserPosts.push(...userPosts);
+        }
+      }
+
+      return filteredByUserPosts.filter(post => post.text && post.text.includes(text));
+    }
   }
 }
