@@ -32,8 +32,7 @@ router.post('/', (req, res) => {
       console.log('New like added');
     });
 
-    res.contentType('text/plain');
-    res.sendStatus(200);
+    res.json({ statusText: 'OK' });
   } catch (err) {
     console.log(err.message);
 
@@ -63,8 +62,7 @@ router.delete('/:likeId', (req, res) => {
       console.log('Like removed');
     });
 
-    res.setHeader('Content-Type', 'text/plain');
-    res.sendStatus(200);
+    res.json({ statusText: 'OK' });
   } catch (err) {
     console.log(err.message);
 

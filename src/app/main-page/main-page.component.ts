@@ -1,24 +1,30 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Subscription, switchMap, concatMap, tap, Observable } from 'rxjs';
+import { concatMap, Observable, Subscription, switchMap, tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { IUser } from '../core/models';
-import { SortPostOptions } from '../core/enums';
+import { AlertTypes, SortPostOptions } from '../core/enums';
 import { PostFactory } from '../core/factories';
 import { FeaturedPost } from '../core/types/featured-post';
 import { postMixin } from '../core/mixins';
 import { PostCommon } from '../core/components';
 import { PostsStateService } from '../core/states';
-import { AuthService, LikesApiService, PostsApiService, StorageService, UserApiService } from '../core/services';
+import {
+  AlertsService,
+  AuthService,
+  LikesApiService,
+  PostsApiService,
+  StorageService,
+  UserApiService
+} from '../core/services';
 import { AddPostComponent } from './modals';
 
 @Component({
   selector: 'main-page',
   templateUrl: './main-page.component.html',
   styleUrls: ['./main-page.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MainPageComponent extends postMixin(PostCommon) implements OnInit, OnDestroy {
   posts?: FeaturedPost[];
@@ -36,17 +42,18 @@ export class MainPageComponent extends postMixin(PostCommon) implements OnInit, 
   private readonly subscriptions = new Subscription();
 
   constructor(
+    readonly postsStateService: PostsStateService,
     private readonly lsService: StorageService,
     private readonly userApiService: UserApiService,
     private readonly authService: AuthService,
     private readonly cdr: ChangeDetectorRef,
     private readonly modalService: NgbModal,
     private readonly http: HttpClient,
-    private readonly postsStateService: PostsStateService,
   ) {
     super(
       new LikesApiService(http),
       new PostsApiService(http),
+      new AlertsService(),
     );
   }
 
@@ -59,6 +66,13 @@ export class MainPageComponent extends postMixin(PostCommon) implements OnInit, 
 
       if (this.allPosts && users) {
         this.posts = filterPosts(this.allPosts)(users)(data);
+
+        this.alertsService.addAlert({
+          heading: 'Success: ',
+          body: 'filtered',
+          time: Date.now(),
+          type: AlertTypes.success,
+        })
       }
 
       this.cdr.detectChanges();
@@ -90,6 +104,12 @@ export class MainPageComponent extends postMixin(PostCommon) implements OnInit, 
 
           return this.postsApiService.addPost(newPost.create(text, userId, isFeatured));
         }),
+        tap(() => this.alertsService.addAlert({
+          heading: 'Success: ',
+          body: 'post added',
+          time: Date.now(),
+          type: AlertTypes.success,
+        })),
         concatMap(() => this.postsStateService.load()),
       ).subscribe();
   }
@@ -111,6 +131,12 @@ export class MainPageComponent extends postMixin(PostCommon) implements OnInit, 
 
   logout(): void {
     this.authService.logout();
+  }
+
+  reloadPosts(method: Observable<void | null>): void {
+    method
+      .pipe(switchMap(() => this.postsStateService.load()))
+      .subscribe();
   }
 
   ngOnDestroy(): void {

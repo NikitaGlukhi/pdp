@@ -1,3 +1,5 @@
+<alerts-outlet></alerts-outlet>
+
 <div class="d-flex flex-row justify-content-end align-items-center p-2">
   <a [routerLink]="'profile/' + currentUser?.id" class="mr-2" [innerText]="currentUser?.nickname"></a>
 
@@ -42,9 +44,9 @@
         [post]="post"
         [currentUserId]="post.userId"
         [userName]="getUserNicknameById(post.userId)"
-        (onLike)="addLike(post.id, currentUser?.id || '')"
-        (onDislike)="removeLike(post, currentUser?.id || '')"
-        (onMarkedFeatured)="markPostFeatured($event, posts)"
+        (onLike)="reloadPosts(addLike(post.id, currentUser?.id || ''))"
+        (onDislike)="reloadPosts(removeLike(post, currentUser?.id || ''))"
+        (onMarkedFeatured)="reloadPosts(markPostFeatured($event, posts))"
       ></post-core>
     </div>
   </div>

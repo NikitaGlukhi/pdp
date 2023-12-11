@@ -22,11 +22,11 @@ function postConsoleMessage(userId, postId, isNew = false) {
     console.log(`User ${user.nickname} updated ${postId} post`);
   }
 
-  if (isNew) {
+  /*if (isNew) {
     postCreated();
   } else {
     postUpdated();
-  }
+  }*/
 }
 
 router.get('/', (req, res) => {
@@ -67,7 +67,7 @@ router.put('/:id', (req, res) => {
       postConsoleMessage(data.userId, id);
     });
 
-    res.sendStatus(200);
+    res.json({ statusText: 'OK' });
   } catch (err) {
     console.log(err.message);
 
@@ -86,7 +86,7 @@ router.post('/', (req, res) => {
       postConsoleMessage(req.body.userId, req.body.id, true);
     });
 
-    res.sendStatus(200);
+    res.json({ statusText: 'OK' });
   } catch (err) {
     console.log(err.message);
 

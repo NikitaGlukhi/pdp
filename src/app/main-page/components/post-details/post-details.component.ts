@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { tap, switchMap, Observable, Subscription, BehaviorSubject } from 'rxjs';
 
-import { LikesApiService, PostsApiService, StorageService } from '../../../core/services';
+import { LikesApiService, PostsApiService, StorageService, AlertsService } from '../../../core/services';
 import { ILike } from '../../../core/models';
 import { FeaturedPost } from '../../../core/types/featured-post';
 import { FeaturedImagePost } from '../../../core/types';
@@ -29,7 +29,7 @@ export class PostDetailsComponent extends postMixin(PostCommon) implements OnIni
     private readonly storageService: StorageService,
     private readonly http: HttpClient,
   ) {
-    super(new LikesApiService(http), new PostsApiService(http))
+    super(new LikesApiService(http), new PostsApiService(http), new AlertsService())
   }
 
   ngOnInit(): void {

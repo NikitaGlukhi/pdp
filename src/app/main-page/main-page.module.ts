@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModalModule, NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { CoreComponentsModule } from '../core/components';
 import { SetUnderlineDirective } from '../core/directives';
@@ -27,6 +27,7 @@ import { AddPostComponent } from './modals';
     CoreComponentsModule,
     ReactiveFormsModule,
     NgbModalModule,
+    NgbAlertModule,
   ],
 })
 export class MainPageModule {}
