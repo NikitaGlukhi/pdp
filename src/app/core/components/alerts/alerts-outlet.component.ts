@@ -1,7 +1,6 @@
-import { OnInit, OnDestroy, Component } from '@angular/core';
+import { AfterViewInit, OnDestroy, Component } from '@angular/core';
 import { tap, Subscription } from 'rxjs';
 
-import { IAlert } from '../../models';
 import { AlertsService, ClockService } from '../../services';
 
 @Component({
@@ -9,7 +8,7 @@ import { AlertsService, ClockService } from '../../services';
   templateUrl: './alerts-outlet.component.html',
   styleUrls: ['./alerts-outlet.component.scss'],
 })
-export class AlertsOutletComponent implements OnInit, OnDestroy {
+export class AlertsOutletComponent implements AfterViewInit, OnDestroy {
   private readonly subscriptions = new Subscription();
 
   constructor(
@@ -17,7 +16,7 @@ export class AlertsOutletComponent implements OnInit, OnDestroy {
     private readonly clockService: ClockService,
   ) {}
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     const clockSub = this.clockService.clock$
       .pipe(
         tap(now => {

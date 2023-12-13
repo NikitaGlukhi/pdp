@@ -7,7 +7,8 @@
 </div>
 
 <div class="posts">
-  <input type="text" [ngModel]="searchData" class="form-control search-data" placeholder="Search posts by username or post content" (ngModelChange)="searchPosts($event)" />
+  <input type="text" [ngModel]="searchData" class="form-control search-data" placeholder="Search posts by username or post content" (ngModelChange)="searchPosts()" />
+  <input type="checkbox" class="form-control" [ngModel]="filterByFeaturedFLag" (ngModelChange)="searchPosts()"> Show featured posts
   <button class="btn btn-success" (click)="addPost()">Add new post</button>
 
   <div class="d-flex flex-row justify-content-between align-items-center">

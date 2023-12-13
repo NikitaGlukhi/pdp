@@ -30,6 +30,7 @@ export class MainPageComponent extends postMixin(PostCommon) implements OnInit, 
   posts?: FeaturedPost[];
   currentUser?: IUser;
   searchData?: string;
+  filterByFeaturedFLag = false;
   sortOptions = SortPostOptions;
   selectedOption = SortPostOptions.all;
 
@@ -65,7 +66,7 @@ export class MainPageComponent extends postMixin(PostCommon) implements OnInit, 
       const users = this.users?.filter(user => user.nickname.includes(data));
 
       if (this.allPosts && users) {
-        this.posts = filterPosts(this.allPosts)(users)(data);
+        this.posts = this.filterPosts()(data)(this.filterByFeaturedFLag);
 
         this.alertsService.addAlert({
           heading: 'Success: ',
@@ -114,9 +115,9 @@ export class MainPageComponent extends postMixin(PostCommon) implements OnInit, 
       ).subscribe();
   }
 
-  searchPosts(searchString: string): void {
+  searchPosts(): void {
     /* Trigger the worker */
-    this.worker.postMessage(searchString);
+    this.worker.postMessage(this.searchData);
   }
 
   getUserNicknameById = (id?: string): string => {
@@ -155,21 +156,30 @@ export class MainPageComponent extends postMixin(PostCommon) implements OnInit, 
         })
       )
   }
-}
 
-function filterPosts(posts: FeaturedPost[]): (users: IUser[]) => (text: string) => FeaturedPost[] {
-  return function (users: IUser[]) {
+  private filterPosts(): (text: string) => (isFeatured: boolean) => FeaturedPost[] {
+    const posts = this.allPosts as FeaturedPost[];
+    const users = this.users as IUser[];
+
     return function (text: string) {
-      const filteredByUserPosts = []
+      return function (isFeatured: boolean) {
+        const filteredByUserPosts = []
 
-      for (const user of users) {
-        const userPosts = posts.filter(post => post.userId === user.id);
-        if (userPosts) {
-          filteredByUserPosts.push(...userPosts);
+        for (const user of users) {
+          const userPosts = posts.filter(post => post.userId === user.id);
+          if (userPosts) {
+            filteredByUserPosts.push(...userPosts);
+          }
         }
-      }
 
-      return filteredByUserPosts.filter(post => post.text && post.text.includes(text));
+        const filteredByTextPosts = filteredByUserPosts.filter(post => post.text && post.text.includes(text))
+
+        if (isFeatured) {
+          return filteredByTextPosts.filter(post => post.isFeatured);
+        }
+
+        return filteredByUserPosts;
+      }
     }
   }
 }

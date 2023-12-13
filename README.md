@@ -1,38 +1,54 @@
-## @Liked decorator
-An implementation of @Liked decorator you can find in `src/app/core/decorators/liked.decorator.ts` and an example of usage of this decorator is in `src/app/core/components/post/post.component.ts`.
+## Mixins
+I created a mixin for post functional in `src/app/core/mixins/post-mixin.ts` and use it in `src/app/main-page/components/post-details/post-details.component.ts` and `src/app/main-page/main-page.component.ts`
 
-## Decorators Fundamentals
-### 1. Explain the purpose of the @Liked decorator in your implementation.
-In my app @Liked decorator modify `addLike()` method, which increase likes count for specific post, that adds some reactive behaviour to the application.
-### 2. How does the @Liked decorator modify the behavior of the like method?
-It increases post's `likesCount` property during executing `addLike()` method in `src/app/core/components/post/post.component.ts` file.
+### 1. Describe what benefit do mixins bring
+#### Using mixins allows us to inherit a class from multiple classes.
 
-## Angular Architecture
-### 1. How do decorators fit into the overall architecture of an Angular application?
-Decorators are core part of Angular architecture. As example: `@Input` and `@Output` decorator with of which data is exchanged between parent and child components.
-### 2. In what situations might decorators be particularly useful in the context of an Angular application?
-- Data exchange between parent and child components (`@Input`/`@Output`)
-- Component declaration (`@Component`)
-- NgModule declaration (`@NgModule`)
-- To mark class for Dependency Injection (`@Injectable`)
-- Listen DOM events (`@HostListener`)
-- In TypeORM to describe DB table columns
+### 2. Name a few cases that could ideal for a usage of mixin
+#### I think, it could be `UserDetailsComponent` but I need to think about functional what could be moved to mixin.
 
-## Use Cases of Decorators in Angular:
-### 1. Provide at least two other use cases where custom decorators could be beneficial in an Angular project.
-Decorators is a good solution when you need to provide same solution in different part of application. Another way, for example, for caching.
-### 2. Discuss the advantages of using decorators for these use cases.
-You can simplify way to add difficult logic in different part of application. For caching you can only add a decorator to class/method without needless to create logic for store data in cache.
+## Function curry
+Curried filter posts function implemented in `src/app/main-page/main-page.component.ts` (method `filterPosts()`) where you need to pass text param to filter posts by users and post body 
 
-## Reflection on Implementation
-### 1. Reflect on the challenges you faced while implementing the @Liked decorator. How did you overcome them?
-### 2. Discuss any design decisions you made and why you made them.
-First of all I investigated types of decorators, that could be provided (class/method/property decorators). The next challenge was, that I always got
-an `Unable to resolve signature of class decorator when called as an expression`. Solved it by reworking `addLike()` from arrow to regular function. And the last one was how to increase post's likes count.
-Solved it by passing post object as method param and that got access to it via `...args` in decorator.
+### 1. What insights did you gain into the concept of currying, and how did it influence your approach to designing the filtering system in Angular?
+#### I can use them as universal function (if use first layer of curried function) and then add other different parameters depend on situation
 
-## Extending the Challenge:
-### 1. How might you extend the functionality of the @Liked decorator to handle additional features, such as preventing a user from liking a post multiple times?
-By passing `userId` param in method `addLike` and check if user already liked this post.
-### 2. Discuss potential improvements to the user interface related to the display of likes.
-I'd like to add additional decorator for `removeLike` method.
+## Notification service
+ - You can find notification service in `src/app/core/services/alerts.service.ts`. Here I have `alerts$` parameter which is BehaviourSubject and for which changes I subscribe in AlertsComponent. Also, here implemented few methods for adding/closing alerts 
+ - Alerts Component implemented in `src/app/core/components/alerts/alerts-outlet.component.ts`. In html file I subscribe for `alerts$` data changes to display alerts
+ - For auto closing alerts I created ClockService (`src/app/core/services/clock.service.ts`) which check triggers every seconds by subscribing for its changes I filter outdated alerts
+
+Note: please note, that right now alerts not display on pages where I added them because subscription not working properly (investigating this)
+
+## Flux (state management)
+Added state management for posts data. For this I used Akita store
+
+ - Implemented PostsStore in `src/app/core/states/posts/posts.store.ts` file
+ - Implemented PostsState in `src/app/core/states/posts/posts.state.ts` file
+ - Implemented query(action) in `src/app/core/states/posts/posts.query.ts` file
+ - Also, added PostsStateService (`src/app/core/states/posts/posts-state.service.ts`) to call query(action) methods
+
+### 1. Reflect on how Flux architecture improved the management of real-time notifications in your social media clone. How did the unidirectional data flow contribute to a more predictable state management process?
+#### State management allows us not call a big data stack from DB every time when we navigate between pages for example. We can load data once and that this data will be stored in store on our FE and we can update it only whe data was updated in DB
+
+### 2. Describe any challenges you encountered while implementing Flux for real-time notifications. How did the Flux architecture help address these challenges, and what solutions did you implement?
+#### My main challenge was how to fix call method to get updated data from DB after data was updated. It was not related to flux functional. It was related to backend. Finally, I fixed it by set `res.json()` as a result for POST/PUT/DELETE endpoints
+
+## AOT & JIT compilation
+AOT compilation
+Advantages:
+ - Runs before code execution
+ - No needles for additional RAM
+
+JIT compilation
+Advantages:
+ - caching results of compilation. As a result, code execution speed in JIT can be very fast
+ - JIT uses different levels of optimization to find the best one for our code
+ - Code can be optimized while it's running
+
+Disadvantages:
+ - Optimization and de-optimization cycles are expensive
+ - JIT introduces the memory overhead associated with storing optimized code
+
+As for me, the JIT compilation will be better for development mode, while AOT compilation I'd prefer to use for production
+
