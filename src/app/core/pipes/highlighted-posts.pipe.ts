@@ -9,8 +9,6 @@ import { SortPostOptions } from '../enums';
 })
 export class HighlightedPostsPipe implements PipeTransform {
   transform(value: FeaturedPost[], sortOption: SortPostOptions): FeaturedPost[] {
-    console.log('highlightedPosts');
-
     switch (sortOption) {
       case SortPostOptions.likes:
         return value.sort((a, b) => b.likes.length - a.likes.length);

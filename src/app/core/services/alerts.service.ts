@@ -9,6 +9,11 @@ import { IAlert } from '../models';
 export class AlertsService {
   readonly alerts$ = new BehaviorSubject<IAlert[]>([]);
 
+  constructor() {
+    console.log('AlertsService constructor');
+  }
+
+
   addAlert(newAlert: Omit<IAlert, 'id'>): string {
     const alerts = this.alerts$.getValue();
     const id = v4();

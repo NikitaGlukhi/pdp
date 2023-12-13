@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 
 import { concatMap, Observable, Subscription, switchMap, tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -8,7 +7,6 @@ import { IUser } from '../core/models';
 import { AlertTypes, SortPostOptions } from '../core/enums';
 import { PostFactory } from '../core/factories';
 import { FeaturedPost } from '../core/types/featured-post';
-import { postMixin } from '../core/mixins';
 import { PostCommon } from '../core/components';
 import { PostsStateService } from '../core/states';
 import {
@@ -26,7 +24,7 @@ import { AddPostComponent } from './modals';
   templateUrl: './main-page.component.html',
   styleUrls: ['./main-page.component.scss'],
 })
-export class MainPageComponent extends postMixin(PostCommon) implements OnInit, OnDestroy {
+export class MainPageComponent extends PostCommon implements OnInit, OnDestroy {
   posts?: FeaturedPost[];
   currentUser?: IUser;
   searchData?: string;
@@ -49,12 +47,14 @@ export class MainPageComponent extends postMixin(PostCommon) implements OnInit, 
     private readonly authService: AuthService,
     private readonly cdr: ChangeDetectorRef,
     private readonly modalService: NgbModal,
-    private readonly http: HttpClient,
+    private readonly likesService: LikesApiService,
+    private readonly postsService: PostsApiService,
+    override readonly alertsService: AlertsService,
   ) {
     super(
-      new LikesApiService(http),
-      new PostsApiService(http),
-      new AlertsService(),
+      likesService,
+      postsService,
+      alertsService,
     );
   }
 

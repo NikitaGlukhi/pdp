@@ -3,8 +3,6 @@ import { Pipe, PipeTransform } from '@angular/core';
 @Pipe({name: 'capitalizeFirstLetter'})
 export class CapitalizeFirstLetterPipe implements PipeTransform {
   transform(value: string): string {
-    console.log('capitalizeFirstLetter');
-
     const sentences = value.replace(/([.?!])\s*(?=[A-Z])/g, "$1|").split('|')
       .map(item => item.trim())
       .filter(item => item !== '');
