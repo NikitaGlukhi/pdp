@@ -1,32 +1,29 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { concatMap, Observable, Subscription, switchMap, tap } from 'rxjs';
+import {catchError, concatMap, Observable, of, Subscription, switchMap, tap} from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { IUser } from '../core/models';
+import {IAddLike, ILike, IUser} from '../core/models';
 import { AlertTypes, SortPostOptions } from '../core/enums';
 import { PostFactory } from '../core/factories';
 import { FeaturedPost } from '../core/types/featured-post';
-import { postMixin } from '../core/mixins';
-import { PostCommon } from '../core/components';
 import { PostsStateService } from '../core/states';
 import {
   AlertsService,
-  AuthService,
-  LikesApiService,
-  PostsApiService,
+  AuthService, DataService,
   StorageService,
   UserApiService
 } from '../core/services';
 import { AddPostComponent } from './modals';
+import {BASE_HTTP_PATH} from '../core/constants';
 
 @Component({
   selector: 'main-page',
   templateUrl: './main-page.component.html',
   styleUrls: ['./main-page.component.scss'],
 })
-export class MainPageComponent extends postMixin(PostCommon) implements OnInit, OnDestroy {
+export class MainPageComponent implements OnInit, OnDestroy {
   posts?: FeaturedPost[];
   currentUser?: IUser;
   searchData?: string;
@@ -49,14 +46,10 @@ export class MainPageComponent extends postMixin(PostCommon) implements OnInit, 
     private readonly authService: AuthService,
     private readonly cdr: ChangeDetectorRef,
     private readonly modalService: NgbModal,
-    private readonly http: HttpClient,
-  ) {
-    super(
-      new LikesApiService(http),
-      new PostsApiService(http),
-      new AlertsService(),
-    );
-  }
+    private readonly alertsService: AlertsService,
+    private readonly postsApiService: DataService<FeaturedPost>,
+    private readonly likesApiService: DataService<ILike>,
+  ) {}
 
   ngOnInit(): void {
     const token = this.lsService.getData('auth-token');
@@ -103,7 +96,10 @@ export class MainPageComponent extends postMixin(PostCommon) implements OnInit, 
           const newPost = this.factory.createPost();
           const userId = this.currentUser?.id || '';
 
-          return this.postsApiService.addPost(newPost.create(text, userId, isFeatured));
+          return this.postsApiService.add(
+            `${BASE_HTTP_PATH}/posts`,
+            JSON.stringify(newPost.create(text, userId, isFeatured))
+          );
         }),
         tap(() => this.alertsService.addAlert({
           heading: 'Success: ',
@@ -113,6 +109,85 @@ export class MainPageComponent extends postMixin(PostCommon) implements OnInit, 
         })),
         concatMap(() => this.postsStateService.load()),
       ).subscribe();
+  }
+
+  addLike(postId: string, userId: string): Observable<void> {
+    const data: IAddLike = { postId, userId }
+
+    return this.likesApiService.add(`${BASE_HTTP_PATH}/likes`, JSON.stringify(data))
+      .pipe(
+        tap(() => {
+          this.alertsService.addAlert({
+            heading: 'Success: ',
+            body: 'you liked this post',
+            time: Date.now(),
+            type: AlertTypes.success,
+          })
+        }),
+        catchError(err => {
+          this.alertsService.addAlert({
+            heading: 'Failed: ',
+            body: 'an error occurred during liking post',
+            time: Date.now(),
+            type: AlertTypes.danger,
+          });
+
+          return of(err);
+        })
+      );
+  }
+
+  removeLike(post: FeaturedPost, userId: string): Observable<void | null> {
+    const like = post.likes.find(like => like.likedBy === userId);
+
+    if (like) {
+      return this.likesApiService.delete(like.id)
+        .pipe(
+          tap(() => {
+            this.alertsService.addAlert({
+              heading: 'Success: ',
+              body: 'you disliked this post',
+              time: Date.now(),
+              type: AlertTypes.success,
+            })
+          }),
+          catchError(err => {
+            this.alertsService.addAlert({
+              heading: 'Failed: ',
+              body: 'an error occurred during disliking post',
+              time: Date.now(),
+              type: AlertTypes.danger,
+            });
+
+            return of(err);
+          })
+        );
+    }
+
+    return of(null);
+  }
+
+  markPostFeatured(data: { postId: string, isFeatured: boolean }, posts: FeaturedPost[]): Observable<void | null> {
+    const {postId, isFeatured} = data;
+    let post = posts.find(post => post.id === postId);
+
+    if (post) {
+      post = {...post, isFeatured};
+      return this.postsApiService.update(
+        `${BASE_HTTP_PATH}/posts/${data.postId}`,
+        JSON.stringify(post),
+      )
+        .pipe(
+          tap(() => this.alertsService.addAlert({
+            heading: 'Success: ',
+            body: 'post added to featured posts',
+            time: Date.now(),
+            type: AlertTypes.success,
+          })),
+        );
+    }
+
+    return of(null);
   }
 
   searchPosts(): void {

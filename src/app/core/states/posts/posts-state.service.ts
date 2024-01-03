@@ -2,21 +2,22 @@ import { Injectable } from '@angular/core';
 
 import { Observable, tap } from 'rxjs';
 
-import { PostsApiService } from '../../services';
 import { FeaturedPost } from '../../types/featured-post';
 import { PostsQuery } from './posts.query';
 import { PostsStore } from './posts.store';
+import { DataService } from '../../services';
+import { BASE_HTTP_PATH } from '../../constants';
 
 @Injectable({ providedIn: 'root' })
 export class PostsStateService {
   constructor(
     private readonly store: PostsStore,
     private readonly query: PostsQuery,
-    private readonly postsAPiService: PostsApiService,
+    private readonly commonDataService: DataService<FeaturedPost>,
   ) {}
 
   load(): Observable<FeaturedPost[]> {
-    return this.postsAPiService.getAll()
+    return this.commonDataService.get(`${BASE_HTTP_PATH}/posts`)
       .pipe(tap(posts => this.store.set(posts)));
   }
 

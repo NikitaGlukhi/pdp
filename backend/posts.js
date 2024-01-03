@@ -79,11 +79,12 @@ router.post('/', (req, res) => {
   const buffer = getAllData();
   const allData = JSON.parse(Buffer.from(buffer, 'base64').toString('utf8'));
   const pathToFile = path.join(__dirname, './db.json');
-  allData.posts.push({ ...req.body, createdAt: Date.now() });
+  const body = JSON.parse(req.body.data);
+  allData.posts.push({ ...body, createdAt: Date.now() });
 
   try {
     fs.writeFile(pathToFile, JSON.stringify(allData), () => {
-      postConsoleMessage(req.body.userId, req.body.id, true);
+      postConsoleMessage(body.userId, body.id, true);
     });
 
     res.json({ statusText: 'OK' });

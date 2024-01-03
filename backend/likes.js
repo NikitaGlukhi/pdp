@@ -50,7 +50,7 @@ router.get('/:postId', (req, res) => {
   res.send(result);
 });
 
-router.delete('/:likeId', (req, res) => {
+router.delete('/post/:likeId', (req, res) => {
   const { likeId } = req.params;
   const buffer = getAllData();
   const allData =  JSON.parse(Buffer.from(buffer, 'base64').toString('utf8'));
