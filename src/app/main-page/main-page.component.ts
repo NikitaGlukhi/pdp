@@ -23,6 +23,7 @@ import { unsubscribeMixin } from '../core/mixins';
   selector: 'main-page',
   templateUrl: './main-page.component.html',
   styleUrls: ['./main-page.component.scss'],
+  providers: [AuthService],
 })
 export class MainPageComponent extends unsubscribeMixin() implements OnInit, OnDestroy {
   posts?: FeaturedPost[];

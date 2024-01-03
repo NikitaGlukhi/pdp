@@ -1,14 +1,17 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
-import { of, map, tap, Observable, catchError } from 'rxjs';
+import { of, map, tap, Observable, catchError, interval, startWith, switchMap } from 'rxjs';
 
 import { StorageService } from './storage.service';
-import { IDbModel, IUser } from '../models';
+import { IUser } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class UserApiService {
   private readonly basePath = 'http://localhost:3000';
+  private readonly tokenRefreshCheckIntervalInMilliseconds = 10000;
+  readonly tokenRefreshCheckInterval = interval(this.tokenRefreshCheckIntervalInMilliseconds)
+    .pipe(startWith(-1));
 
   constructor(
     private readonly http: HttpClient,
@@ -28,6 +31,10 @@ export class UserApiService {
       }));
   }
 
+  getUser(): Observable<IUser> {
+    return this.http.get<IUser>(`${this.basePath}/users/user`);
+  }
+
   getUserById(token: string): Observable<IUser> {
     return this.http.get<IUser>(`${this.basePath}/users/${token}`);
   }
@@ -37,8 +44,12 @@ export class UserApiService {
   }
 
   refreshToken(): Observable<void | null> {
-    const token = this.lsService.getData('auth-token');
+    const token = this.lsService.getData('auth-token') as string;
 
+    return this.tokenRefreshCheckInterval.pipe(switchMap(() => this.executeRefresh(token)));
+  }
+
+  private executeRefresh(token: string): Observable<void | null> {
     return this.http.put<string>(`${this.basePath}/users/refreshToken`, { token })
       .pipe(
         map(token => {

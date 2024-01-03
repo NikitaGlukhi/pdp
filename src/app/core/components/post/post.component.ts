@@ -1,9 +1,10 @@
-import { Input, Output, ViewChild, Component, EventEmitter } from '@angular/core';
+import { Input, Output, ViewChild, Component, EventEmitter, inject } from '@angular/core';
 
 import { FeaturedPost } from '../../types/featured-post';
 import { LikesComponent } from '../likes/likes.component';
 import { FeaturedImagePost } from '../../types';
 import { Liked } from '../../decorators';
+import { LoggingService } from '../../services';
 
 function totalPostLikes(checkDate: number, username: string): void {
   // @ts-ignore
@@ -55,8 +56,12 @@ export class PostComponent {
 
   @Liked()
   addLike(post: FeaturedPost): void {
+    inject(LoggingService).markAction('Like');
     this.onLike.emit();
   }
 
-  removeLike = (): void => this.onDislike.emit();
+  removeLike = (): void => {
+    inject(LoggingService).markAction('Dislike');
+    this.onDislike.emit();
+  }
 }

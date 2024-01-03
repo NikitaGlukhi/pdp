@@ -1,14 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { tap } from 'rxjs';
 
-import { AuthService } from '../../../core/services';
+import { AuthService, LoggingService } from '../../../core/services';
 
 @Component({
   selector: 'login',
   templateUrl: './login.component.html',
+  providers: [AuthService]
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
@@ -34,6 +35,7 @@ export class LoginComponent implements OnInit {
 
   authenticate(): void {
     console.log('classic function', this); /* By default 'this' is a class instance and could be re-bound by changing the context */
+    inject(LoggingService).markAction('Login');
 
     this.authService.login(this.getFormValues(this.loginForm))
       .pipe(tap(() => this.router.navigateByUrl('')))

@@ -1,16 +1,12 @@
 import { Injectable } from '@angular/core';
 
-import { map, interval, startWith, Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 import { UserApiService } from './user-api.service';
 import { StorageService } from './storage.service';
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class AuthService {
-  private readonly tokenRefreshCheckIntervalInMilliseconds = 10000;
-  readonly tokenRefreshCheckInterval = interval(this.tokenRefreshCheckIntervalInMilliseconds)
-    .pipe(startWith(-1));
-
   constructor(
     private readonly userApiService: UserApiService,
     private readonly lsService: StorageService,

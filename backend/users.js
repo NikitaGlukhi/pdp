@@ -22,6 +22,21 @@ router.get('/', (req, res) => {
   res.send(users);
 });
 
+router.get('/user', (req, res) => {
+  const { authToken } = req.params;
+  const token = jwt.decode(authToken, { complete: true });
+  const buffer = fs.readFileSync(path.join(__dirname, './db.json'), { encoding: 'base64' });
+  const allData = JSON.parse(Buffer.from(buffer, 'base64').toString('utf8'));
+  const result = allData.users.find(user => user.id === token.payload.id);
+  const posts = allData.posts.map(post => {
+    const likes = allData.likes.filter(like => like.postId === post.id);
+
+    return { ...post, likes, likesCount: likes.length };
+  }).filter(post => post.userId === result.id);
+
+  res.send({ ...result, posts });
+});
+
 router.get('/:id', (req, res) => {
   const { id } = req.params;
   const token = jwt.decode(id, { complete: true });
@@ -59,8 +74,8 @@ router.get('/:login/:password', (req, res) => {
 
 
 router.put('/refreshToken', (req, res) => {
-  const body = req.body;
-  const decoded = jwt.decode(body, { complete: true });
+  const { authToken } = req.params;
+  const decoded = jwt.decode(authToken, { complete: true });
 
   if (decoded) {
     const { payload } = decoded;

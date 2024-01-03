@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { isAuthenticated } from './core/guards';
+import { isAdmin, isAuthenticated } from './core/guards';
 
 const routes: Routes = [
   {
@@ -25,6 +25,7 @@ const routes: Routes = [
     path: 'status-codes',
     loadChildren: () => import('./status-codes/status-codes.module')
       .then(module => module.StatusCodesModule),
+    canActivate: [isAuthenticated, isAdmin],
   },
   {
     path: '**',
