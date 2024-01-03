@@ -1,30 +1,32 @@
-import { OnInit, OnDestroy, Component, ViewChildren } from '@angular/core';
+import { OnInit, Component, ViewChildren } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { tap, Subscription } from 'rxjs';
+import { tap } from 'rxjs';
 
 import { UserComponent } from '../core/components';
 import { UserApiService, StorageService } from '../core/services';
 import { IUser } from '../core/models';
+import { unsubscribeMixin } from '../core/mixins';
 
 @Component({
   selector: 'user-profile',
   templateUrl: './user-profile.component.html',
 })
-export class UserProfileComponent implements OnInit, OnDestroy {
+export class UserProfileComponent extends unsubscribeMixin() implements OnInit {
   @ViewChildren('userData', { read: UserComponent }) userDataComponent?: UserComponent;
 
   user?: IUser;
   isCurrentUser?: boolean;
   userId?: string;
   currentUserId?: string;
-  private readonly subscriptions = new Subscription();
 
   constructor(
     private readonly route: ActivatedRoute,
     private readonly userApiService: UserApiService,
     private readonly storageService: StorageService,
-  ) {}
+  ) {
+    super();
+  }
 
   ngOnInit(): void {
     this.userId = this.route.snapshot.paramMap.get('userId') as string;
@@ -42,9 +44,5 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
   getUserName(): string {
     return this.user?.nickname || 'N/A';
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
   }
 }

@@ -1,7 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import {tap, switchMap, Observable, Subscription, BehaviorSubject, catchError, of} from 'rxjs';
+import {tap, switchMap, Observable, BehaviorSubject, catchError, of} from 'rxjs';
 
 import {AlertsService, DataService, StorageService} from '../../../core/services';
 import {IAddLike, ILike} from '../../../core/models';
@@ -9,19 +9,18 @@ import { FeaturedPost } from '../../../core/types/featured-post';
 import { FeaturedImagePost } from '../../../core/types';
 import { BASE_HTTP_PATH } from '../../../core/constants';
 import { AlertTypes } from '../../../core/enums';
+import { unsubscribeMixin } from '../../../core/mixins';
 
 @Component({
   selector: 'post-details',
   templateUrl: './post-details.component.html',
 })
-export class PostDetailsComponent implements OnInit, OnDestroy {
+export class PostDetailsComponent extends unsubscribeMixin() implements OnInit {
   post?: FeaturedPost;
   likes$ = new BehaviorSubject<ILike[]>([]);
   editModeEnabled = false;
   postText?: string;
   userId?: string;
-
-  private readonly subscriptions = new Subscription();
 
   constructor(
     private readonly activatedRoute: ActivatedRoute,
@@ -29,7 +28,9 @@ export class PostDetailsComponent implements OnInit, OnDestroy {
     private readonly postsApiService: DataService<FeaturedPost>,
     private readonly likesApiService: DataService<ILike>,
     private readonly alertsService: AlertsService,
-  ) {}
+  ) {
+    super();
+  }
 
   ngOnInit(): void {
     this.userId = this.storageService.getData('auth-token') as string;
@@ -118,10 +119,6 @@ export class PostDetailsComponent implements OnInit, OnDestroy {
 
   getImgUrl(post: FeaturedPost): string {
     return (<FeaturedImagePost>post).imgUrl;
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
   }
 
   private getLikes(getPostId: () => string): Observable<ILike[]> {

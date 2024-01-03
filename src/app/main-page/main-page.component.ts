@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import {catchError, concatMap, Observable, of, Subscription, switchMap, tap} from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import {IAddLike, ILike, IUser} from '../core/models';
+import { IAddLike, ILike, IUser } from '../core/models';
 import { AlertTypes, SortPostOptions } from '../core/enums';
 import { PostFactory } from '../core/factories';
 import { FeaturedPost } from '../core/types/featured-post';
@@ -16,14 +16,15 @@ import {
   UserApiService
 } from '../core/services';
 import { AddPostComponent } from './modals';
-import {BASE_HTTP_PATH} from '../core/constants';
+import { BASE_HTTP_PATH } from '../core/constants';
+import { unsubscribeMixin } from '../core/mixins';
 
 @Component({
   selector: 'main-page',
   templateUrl: './main-page.component.html',
   styleUrls: ['./main-page.component.scss'],
 })
-export class MainPageComponent implements OnInit, OnDestroy {
+export class MainPageComponent extends unsubscribeMixin() implements OnInit, OnDestroy {
   posts?: FeaturedPost[];
   currentUser?: IUser;
   searchData?: string;
@@ -37,7 +38,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
   /* Initialize worker */
   private worker = new Worker(new URL('../core/workers/search-posts.worker', import.meta.url));
-  private readonly subscriptions = new Subscription();
 
   constructor(
     readonly postsStateService: PostsStateService,
@@ -49,7 +49,9 @@ export class MainPageComponent implements OnInit, OnDestroy {
     private readonly alertsService: AlertsService,
     private readonly postsApiService: DataService<FeaturedPost>,
     private readonly likesApiService: DataService<ILike>,
-  ) {}
+  ) {
+    super();
+  }
 
   ngOnInit(): void {
     const token = this.lsService.getData('auth-token');
@@ -215,9 +217,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  ngOnDestroy(): void {
+  override ngOnDestroy(): void {
     this.worker.terminate();
-    this.subscriptions.unsubscribe();
   }
 
   private loadAllPosts(): Observable<FeaturedPost[]> {
