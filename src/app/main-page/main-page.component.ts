@@ -86,6 +86,8 @@ export class MainPageComponent extends unsubscribeMixin() implements OnInit, OnD
         })
       ).subscribe();
     this.subscriptions.add(usersSub);
+
+    this.subscriptions.add(this.userApiService.refreshToken().subscribe());
   }
 
   addPost(): void {

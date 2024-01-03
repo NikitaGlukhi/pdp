@@ -32,7 +32,7 @@ export class UserProfileComponent extends unsubscribeMixin() implements OnInit {
     this.userId = this.route.snapshot.paramMap.get('userId') as string;
     this.currentUserId = this.storageService.getData('auth-token') as string;
 
-    const userSub = this.userApiService.getUserById(this.userId)
+    const userSub = this.userApiService.getUserById(this.currentUserId)
       .pipe(tap(user => this.user = user)).subscribe();
 
     this.subscriptions.add(userSub);

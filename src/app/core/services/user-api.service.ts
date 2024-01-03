@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
-import { tap, Observable } from 'rxjs';
+import { of, map, tap, Observable, catchError } from 'rxjs';
 
 import { StorageService } from './storage.service';
 import { IDbModel, IUser } from '../models';
@@ -19,26 +19,36 @@ export class UserApiService {
     In JS I won't be able to use strongly typed parameters
     and there would be no way to apply typing to the method getUserByAuthData()
   */
-  getUserByAuthData(login: string, password: string): Observable<IUser | undefined> {
-    return this.http.get<IUser>(`${this.basePath}/users/${login}/${password}`)
-      .pipe(
-        tap(user => {
-          let token = '';
+  getUserByAuthData(login: string, password: string): Observable<string> {
+    return this.http.get<string>(`${this.basePath}/users/${login}/${password}`)
+      .pipe(tap(token  => {
+        console.log(token);
 
-          if (user) {
-            token = user.id;
-          }
-
-          this.lsService.saveData('auth-token', token);
-        }),
-      );
+        this.lsService.saveData('auth-token', token)
+      }));
   }
 
-  getUserById(id: string): Observable<IUser> {
-    return this.http.get<IUser>(`${this.basePath}/users/${id}`);
+  getUserById(token: string): Observable<IUser> {
+    return this.http.get<IUser>(`${this.basePath}/users/${token}`);
   }
 
   getAll(): Observable<IUser[]> {
     return this.http.get<IUser[]>('http://localhost:3000/users');
+  }
+
+  refreshToken(): Observable<void | null> {
+    const token = this.lsService.getData('auth-token');
+
+    return this.http.put<string>(`${this.basePath}/users/refreshToken`, { token })
+      .pipe(
+        map(token => {
+          this.lsService.saveData('auth-token', token);
+
+          return;
+        }),
+        catchError(() => {
+          return of(null);
+        })
+      )
   }
 }
