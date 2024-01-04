@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -9,7 +9,7 @@ import { AuthService, LoggingService } from '../../../core/services';
 @Component({
   selector: 'login',
   templateUrl: './login.component.html',
-  providers: [AuthService]
+  providers: [AuthService, LoggingService]
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
@@ -18,6 +18,7 @@ export class LoginComponent implements OnInit {
     private readonly fb: FormBuilder,
     private readonly authService: AuthService,
     private readonly router: Router,
+    private readonly loggingService: LoggingService,
   ) {}
 
   ngOnInit(): void {
@@ -35,7 +36,7 @@ export class LoginComponent implements OnInit {
 
   authenticate(): void {
     console.log('classic function', this); /* By default 'this' is a class instance and could be re-bound by changing the context */
-    inject(LoggingService).markAction('Login');
+    this.loggingService.markAction('Login');
 
     this.authService.login(this.getFormValues(this.loginForm))
       .pipe(tap(() => this.router.navigateByUrl('')))

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { map, Observable } from 'rxjs';
 
@@ -10,6 +11,7 @@ export class AuthService {
   constructor(
     private readonly userApiService: UserApiService,
     private readonly lsService: StorageService,
+    private readonly router: Router,
   ) {}
 
   login(data: { login: string; password: string }): Observable<void> {
@@ -21,5 +23,6 @@ export class AuthService {
 
   logout(): void {
     this.lsService.remove(['auth-token']);
+    this.router.navigateByUrl('/auth');
   }
 }

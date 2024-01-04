@@ -21,11 +21,11 @@ export class AppComponent {
         let content = tag.getAttribute('content') as string;
         let str = 'connect-src ';debugger;
         let index = content.indexOf(str);
-        content = content.slice(0, index + str.length) + "https://baseurl22/ https://baseurl23/ https://baseurl34/ " + content.slice(index + str.length);
+        content = content.slice(0, index + str.length) + "http://localhost:3000/ " + content.slice(index + str.length);
         this.meta.updateTag({ 'http-equiv': 'Content-Security-Policy', content: content });
       } else {
 
-        this.meta.addTag({ 'http-equiv': 'Content-Security-Policy', content: 'connect-src \'self\' https://baseurl1/ https://baseurl2/ https://baseurl3/;' });
+        this.meta.addTag({ 'http-equiv': 'Content-Security-Policy', content: 'connect-src \'self\' http://localhost:3000/;' });
       }
 
       if (i == 1) clearInterval(tim);

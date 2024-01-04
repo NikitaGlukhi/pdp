@@ -1,6 +1,4 @@
 <div *ngIf="alertsService.alerts$ | async as alerts">
-  <pre>{{ alerts | json }}</pre>
-
   <div class="alerts" *ngFor="let alert of alerts">
     <ngb-alert [type]="alert.type">
       <div class="d-flex flex-row align-items-center">

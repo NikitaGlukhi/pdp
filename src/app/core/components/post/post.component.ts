@@ -1,4 +1,4 @@
-import { Input, Output, ViewChild, Component, EventEmitter, inject } from '@angular/core';
+import { Input, Output, ViewChild, Component, EventEmitter } from '@angular/core';
 
 import { FeaturedPost } from '../../types/featured-post';
 import { LikesComponent } from '../likes/likes.component';
@@ -15,6 +15,7 @@ function totalPostLikes(checkDate: number, username: string): void {
   selector: 'post-core',
   templateUrl: './post.component.html',
   styleUrls: ['./post.component.scss'],
+  providers: [LoggingService]
 })
 export class PostComponent {
   @ViewChild('likes', { read: LikesComponent }) likesComponent?: LikesComponent;
@@ -27,6 +28,8 @@ export class PostComponent {
   @Output() onLike = new EventEmitter<void>();
   @Output() onDislike = new EventEmitter<void>();
   @Output() onMarkedFeatured = new EventEmitter<{ postId: string, isFeatured: boolean }>();
+
+  constructor(private readonly loggingService: LoggingService) {}
 
   countTotalLikes(): void {
     totalPostLikes.apply(this.likesComponent, [Date.now(), this.userName || 'N/A']); // will get expected result
@@ -56,12 +59,12 @@ export class PostComponent {
 
   @Liked()
   addLike(post: FeaturedPost): void {
-    inject(LoggingService).markAction('Like');
+    this.loggingService.markAction('Like');
     this.onLike.emit();
   }
 
   removeLike = (): void => {
-    inject(LoggingService).markAction('Dislike');
+    this.loggingService.markAction('Dislike');
     this.onDislike.emit();
   }
 }

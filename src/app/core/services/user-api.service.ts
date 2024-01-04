@@ -25,8 +25,6 @@ export class UserApiService {
   getUserByAuthData(login: string, password: string): Observable<string> {
     return this.http.get<string>(`${this.basePath}/users/${login}/${password}`)
       .pipe(tap(token  => {
-        console.log(token);
-
         this.lsService.saveData('auth-token', token)
       }));
   }
