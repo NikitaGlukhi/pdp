@@ -1,13 +1,16 @@
-import { OnInit, Component, Output, EventEmitter } from '@angular/core';
-import { UntypedFormGroup, FormBuilder, Validators } from '@angular/forms';
+import {Component, EventEmitter, OnInit, Output, SecurityContext} from '@angular/core';
+import {FormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {DomSanitizer} from '@angular/platform-browser';
 
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+
+import {unsubscribeMixin} from '../../../core/mixins';
 
 @Component({
   selector: 'add-post-modal',
   templateUrl: './add-post.component.html',
 })
-export class AddPostComponent implements OnInit {
+export class AddPostComponent extends unsubscribeMixin() implements OnInit {
   @Output() response = new EventEmitter<{ text: string, isFeatured: boolean }>();
 
   form?: UntypedFormGroup;
@@ -15,7 +18,10 @@ export class AddPostComponent implements OnInit {
   constructor(
     private readonly formBuilder: FormBuilder,
     private readonly activeModal: NgbActiveModal,
-  ) {}
+    private readonly sanitizer: DomSanitizer,
+  ) {
+    super();
+  }
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
@@ -26,7 +32,11 @@ export class AddPostComponent implements OnInit {
 
   submit(): void {
     const value = this.form?.value;
-    this.response.emit({ text: value.text, isFeatured: value.featured });
+    let safeText = this.sanitizer.sanitize(SecurityContext.HTML, value.text);
+    safeText = this.sanitizer.sanitize(SecurityContext.URL, safeText);
+    safeText = this.sanitizer.sanitize(SecurityContext.SCRIPT, safeText);
+
+    this.response.emit({ text: safeText || '', isFeatured: value.featured });
     this.close();
   }
 

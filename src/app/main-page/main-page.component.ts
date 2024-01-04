@@ -1,23 +1,18 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit, SecurityContext} from '@angular/core';
+import {DomSanitizer} from '@angular/platform-browser';
 
-import {catchError, concatMap, Observable, of, Subscription, switchMap, tap} from 'rxjs';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {catchError, concatMap, Observable, of, switchMap, tap} from 'rxjs';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
-import { IAddLike, ILike, IUser } from '../core/models';
-import { AlertTypes, SortPostOptions } from '../core/enums';
-import { PostFactory } from '../core/factories';
-import { FeaturedPost } from '../core/types/featured-post';
-import { PostsStateService } from '../core/states';
-import {
-  AlertsService,
-  AuthService, DataService,
-  StorageService,
-  UserApiService
-} from '../core/services';
-import { AddPostComponent } from './modals';
-import { BASE_HTTP_PATH } from '../core/constants';
-import { unsubscribeMixin } from '../core/mixins';
+import {IAddLike, ILike, IUser} from '../core/models';
+import {AlertTypes, SortPostOptions} from '../core/enums';
+import {PostFactory} from '../core/factories';
+import {FeaturedPost} from '../core/types/featured-post';
+import {PostsStateService} from '../core/states';
+import {AlertsService, AuthService, DataService, StorageService, UserApiService} from '../core/services';
+import {AddPostComponent} from './modals';
+import {BASE_HTTP_PATH} from '../core/constants';
+import {unsubscribeMixin} from '../core/mixins';
 
 @Component({
   selector: 'main-page',
@@ -50,6 +45,7 @@ export class MainPageComponent extends unsubscribeMixin() implements OnInit, OnD
     private readonly alertsService: AlertsService,
     private readonly postsApiService: DataService<FeaturedPost>,
     private readonly likesApiService: DataService<ILike>,
+    private readonly sanitizer: DomSanitizer,
   ) {
     super();
   }
@@ -197,7 +193,11 @@ export class MainPageComponent extends unsubscribeMixin() implements OnInit, OnD
 
   searchPosts(): void {
     /* Trigger the worker */
-    this.worker.postMessage(this.searchData);
+    let safeSearchData = this.sanitizer.sanitize(SecurityContext.HTML, this.searchData || '');
+    safeSearchData = this.sanitizer.sanitize(SecurityContext.URL, safeSearchData || '');
+    safeSearchData = this.sanitizer.sanitize(SecurityContext.SCRIPT, safeSearchData || '');
+
+    this.worker.postMessage(safeSearchData);
   }
 
   getUserNicknameById = (id?: string): string => {

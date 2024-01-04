@@ -61,7 +61,7 @@ router.get('/:login/:password', (req, res) => {
 
   if (result && result.id) {
     const token = jwt.sign(
-      { id: result.id, username: result.nickname, expiresIn: Date.now() + 3600000, lastUpdatedAt: Date.now() },
+      { id: result.id, role: result.role, expiresIn: Date.now() + 3600000, lastUpdatedAt: Date.now() },
       'secret-key',
       { expiresIn: '1h' },
     );
@@ -87,7 +87,7 @@ router.put('/refreshToken', (req, res) => {
         }
 
         const newToken = jwt.sign(
-          { id: payload.id, username: payload.username, expiresIn: Date.now() + 3600000, lastUpdatedAt: Date.now() },
+          { id: payload.id, role: payload.role, expiresIn: Date.now() + 3600000, lastUpdatedAt: Date.now() },
           'secret-key',
           { expiresIn: '1h' },
         );

@@ -1,54 +1,42 @@
-## Mixins
-I created a mixin for post functional in `src/app/core/mixins/post-mixin.ts` and use it in `src/app/main-page/components/post-details/post-details.component.ts` and `src/app/main-page/main-page.component.ts`
+## TypeScript Genetics.
+I created generic DataService in `src/app/core/services/data.service.ts` and replace all usage of LikesApiService and PostsApiService with it.
 
-### 1. Describe what benefit do mixins bring
-#### Using mixins allows us to inherit a class from multiple classes.
+#### How did using generics in the DataService improve the scalability and maintainability of the application?
+Now I have single service for working with likes/posts data and they have the same functional to get/add/update/delete data, that will simplify working with getting data for those entities in the future.
 
-### 2. Name a few cases that could ideal for a usage of mixin
-#### I think, it could be `UserDetailsComponent` but I need to think about functional what could be moved to mixin.
+#### What were the main challenges you faced when integrating the generic service with existing features like posts, likes, and featured posts?
+The main challenge for me was refactoring calling, parsing methods and endpoints on BE to make functional identical for DataService.
 
-## Function curry
-Curried filter posts function implemented in `src/app/main-page/main-page.component.ts` (method `filterPosts()`) where you need to pass text param to filter posts by users and post body 
+## Memory leaks
+You can find unsubscribe mixing here - `src/app/core/mixins/unsubscribe-mixin.ts` and its usage in
+`src/app/main-page/main-page.component.ts`, `src/app/main-page/components/post-details/post-details.component.ts` and `src/app/user-profile/user-profile.component.ts`
 
-### 1. What insights did you gain into the concept of currying, and how did it influence your approach to designing the filtering system in Angular?
-#### I can use them as universal function (if use first layer of curried function) and then add other different parameters depend on situation
+#### Discuss the challenges you faced in implementing this mixin and making it generic for use across different components.
+The main challenge for me was adding specific functional to he `ngOnDestroy` in `src/app/main-page/main-page.component.ts`. Resolved it by adding `override` before `ngOnDestroy`
 
-## Notification service
- - You can find notification service in `src/app/core/services/alerts.service.ts`. Here I have `alerts$` parameter which is BehaviourSubject and for which changes I subscribe in AlertsComponent. Also, here implemented few methods for adding/closing alerts 
- - Alerts Component implemented in `src/app/core/components/alerts/alerts-outlet.component.ts`. In html file I subscribe for `alerts$` data changes to display alerts
- - For auto closing alerts I created ClockService (`src/app/core/services/clock.service.ts`) which check triggers every seconds by subscribing for its changes I filter outdated alerts
+#### How did you determine which components were responsible for the leaks?
+I found components, that has subscriptions and events (in my case - active worker in `src/app/main-page/main-page.component.ts`) 
 
-Note: please note, that right now alerts not display on pages where I added them because subscription not working properly (investigating this)
+## Dependency injection
+You can find LoggingService in `src/app/core/services/logging.service.ts` and its usage by finding `inject(LoggingService)`.
+I reworked `AuthService` and made it not provided in root. I added it via providers in `src/app/auth/components/login/login.component.ts` and `src/app/main-page/main-page.component.ts`.
 
-## Flux (state management)
-Added state management for posts data. For this I used Akita store
+#### How did Dependency Injection help in managing dependencies across different components and services in the application?
+It allows to avoid creating duplicating code and allows to use single functional in different components/other services.
 
- - Implemented PostsStore in `src/app/core/states/posts/posts.store.ts` file
- - Implemented PostsState in `src/app/core/states/posts/posts.state.ts` file
- - Implemented query(action) in `src/app/core/states/posts/posts.query.ts` file
- - Also, added PostsStateService (`src/app/core/states/posts/posts-state.service.ts`) to call query(action) methods
+## JWT Auth
+JWT auth implemented in `backend/users.js`. I used `jsinwebtoken` for it. Also, here is an endpoint to refresh auth token (`/refreshToken`)
+Interceptor, that adds JWT to HTTP-request is here - `src/app/core/interceptors/jwt-interceptor.ts`.
 
-### 1. Reflect on how Flux architecture improved the management of real-time notifications in your social media clone. How did the unidirectional data flow contribute to a more predictable state management process?
-#### State management allows us not call a big data stack from DB every time when we navigate between pages for example. We can load data once and that this data will be stored in store on our FE and we can update it only whe data was updated in DB
+#### Discuss the security considerations you took into account when storing and transmitting JWTs
+With JWT it difficult to get critical user data, because you need to decode JWT token, but you can't do it without secret key.
 
-### 2. Describe any challenges you encountered while implementing Flux for real-time notifications. How did the Flux architecture help address these challenges, and what solutions did you implement?
-#### My main challenge was how to fix call method to get updated data from DB after data was updated. It was not related to flux functional. It was related to backend. Finally, I fixed it by set `res.json()` as a result for POST/PUT/DELETE endpoints
+## Angular Security Features
+Added Content Security Policy in the `src/app/app.component.ts`. Added sanitizer in the `src/app/main-page/main-page.component.ts` and `src/app/main-page/modals/add-post/add-post.component.ts`
+Created role-based guard (`src/app/core/guards/admin-guard.ts`) that allows to visit Status Codes page only for admins.
 
-## AOT & JIT compilation
-AOT compilation
-Advantages:
- - Runs before code execution
- - No needles for additional RAM
+#### Discuss the importance of sanitizing user input and output in the context of preventing XSS attacks
+Sanitizing of user input is very important thing, cause it now allow to put dangerous links/scripts to the application.
 
-JIT compilation
-Advantages:
- - caching results of compilation. As a result, code execution speed in JIT can be very fast
- - JIT uses different levels of optimization to find the best one for our code
- - Code can be optimized while it's running
-
-Disadvantages:
- - Optimization and de-optimization cycles are expensive
- - JIT introduces the memory overhead associated with storing optimized code
-
-As for me, the JIT compilation will be better for development mode, while AOT compilation I'd prefer to use for production
-
+#### Describe the process of implementing RBAC in the application. How did Angular’s features facilitate this implementation?
+Angular allows to create RBAC via route guards. We can do it using simply way - via user role or using harder way - add specific scope to the route data and store necessary scope for each user in DB.
