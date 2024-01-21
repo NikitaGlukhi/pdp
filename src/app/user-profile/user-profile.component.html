@@ -16,6 +16,8 @@
         [user]="user"
         (followed)="followUser($event)"
       ></user-data>
+
+      <button class="btn btn-success" *ngIf="isCurrentUser">Edit</button>
     </div>
   </div>
 </div>

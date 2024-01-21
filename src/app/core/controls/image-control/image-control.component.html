@@ -1,0 +1,20 @@
+<ng-container *ngIf="url">
+  <div class="d-flex flex-row justify-content-center align-items-start">
+    <img [src]="url" [alt]="file?.name || 'uploaded img'" width="150" height="150">
+    <span class="px-2 py-1 pointer" (click)="clear()">x</span>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="!url">
+  <div class="custom-file">
+    <input
+      id="img-upload"
+      name="imgUpload"
+      type="file"
+      class="custom-file-input"
+      accept="image/*"
+      (change)="onAddFile($event)"
+    >
+    <label class="custom-file-label" for="img-upload">Choose file</label>
+  </div>
+</ng-container>
