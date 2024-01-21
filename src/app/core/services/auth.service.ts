@@ -5,6 +5,8 @@ import { map, Observable } from 'rxjs';
 
 import { UserApiService } from './user-api.service';
 import { StorageService } from './storage.service';
+import {AuthUserStateService, PostsStateService} from '../states';
+import {UsersStateService} from '../states/users/users-state.service';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +14,9 @@ export class AuthService {
     private readonly userApiService: UserApiService,
     private readonly lsService: StorageService,
     private readonly router: Router,
+    private readonly postsStateService: PostsStateService,
+    private readonly usersStateService: UsersStateService,
+    private readonly authUserStateService: AuthUserStateService,
   ) {}
 
   login(data: { login: string; password: string }): Observable<void> {
@@ -23,6 +28,9 @@ export class AuthService {
 
   logout(): void {
     this.lsService.remove(['auth-token']);
+    this.postsStateService.reset();
+    this.usersStateService.reset();
+    this.authUserStateService.reset();
     this.router.navigateByUrl('/auth');
   }
 }

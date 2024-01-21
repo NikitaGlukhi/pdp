@@ -23,7 +23,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/user', (req, res) => {
-  const { authToken } = req.params;
+  const { authToken } = req.query;
   const token = jwt.decode(authToken, { complete: true });
   const buffer = fs.readFileSync(path.join(__dirname, './db.json'), { encoding: 'base64' });
   const allData = JSON.parse(Buffer.from(buffer, 'base64').toString('utf8'));

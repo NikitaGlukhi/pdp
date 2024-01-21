@@ -8,11 +8,12 @@ import {IAddLike, ILike, IUser} from '../core/models';
 import {AlertTypes, SortPostOptions} from '../core/enums';
 import {PostFactory} from '../core/factories';
 import {FeaturedPost} from '../core/types/featured-post';
-import {PostsStateService} from '../core/states';
+import {AuthUserStateService, PostsStateService} from '../core/states';
 import {AlertsService, AuthService, DataService, StorageService, UserApiService} from '../core/services';
 import {AddPostComponent} from './modals';
 import {BASE_HTTP_PATH} from '../core/constants';
 import {unsubscribeMixin} from '../core/mixins';
+import {UsersStateService} from '../core/states/users/users-state.service';
 
 @Component({
   selector: 'main-page',
@@ -46,6 +47,8 @@ export class MainPageComponent extends unsubscribeMixin() implements OnInit, OnD
     private readonly postsApiService: DataService<FeaturedPost>,
     private readonly likesApiService: DataService<ILike>,
     private readonly sanitizer: DomSanitizer,
+    private readonly usersStateService: UsersStateService,
+    private readonly authUserStateService: AuthUserStateService,
   ) {
     super();
   }
@@ -73,12 +76,17 @@ export class MainPageComponent extends unsubscribeMixin() implements OnInit, OnD
 
     this.getAllPosts();
 
-    const usersSub = this.userApiService.getAll()
+    const authUserSub = this.authUserStateService.select()
+      .pipe(tap(user => {
+        this.currentUser = user;
+        this.cdr.detectChanges();
+      })).subscribe();
+    this.subscriptions.add(authUserSub);
+
+    const usersSub = this.usersStateService.selectAll()
       .pipe(
         tap(users => {
           this.users = users;
-          this.currentUser = this.users.find(user => user.id === token);
-
           this.cdr.detectChanges();
         })
       ).subscribe();

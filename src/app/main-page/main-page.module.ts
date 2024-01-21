@@ -9,7 +9,7 @@ import { SetUnderlineDirective } from '../core/directives';
 import { HighlightedPostsPipe } from '../core/pipes';
 import { MainPageComponent } from './main-page.component';
 import { MainPageRoutingModule } from './main-page-routing.module';
-import { PostDetailsComponent } from './components';
+import { PostDetailsComponent, MyProfileComponent } from './components';
 import { AddPostComponent } from './modals';
 
 @NgModule({
@@ -19,6 +19,7 @@ import { AddPostComponent } from './modals';
     SetUnderlineDirective,
     HighlightedPostsPipe,
     AddPostComponent,
+    MyProfileComponent,
   ],
   imports: [
     CommonModule,

@@ -12,10 +12,10 @@ export class JwtInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const token = this.lsService.getData('auth-token') as string;
-    const modifiedReq = req.clone({
-      params: req.params.set('authToken', token),
+    req = req.clone({
+      setParams: { authToken: token },
     });
 
-    return next.handle(modifiedReq);
+    return next.handle(req);
   }
 }

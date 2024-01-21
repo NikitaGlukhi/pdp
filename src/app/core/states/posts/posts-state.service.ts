@@ -33,6 +33,10 @@ export class PostsStateService {
     return this.query.getAll();
   }
 
+  update(id: string, post: FeaturedPost): void {
+    this.store.update(id, post);
+  }
+
   getById(id: string): FeaturedPost | undefined {
     return this.getAll().find(post => post.id === id);
   }

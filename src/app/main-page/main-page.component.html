@@ -1,6 +1,6 @@
 <alerts-outlet></alerts-outlet>
 
-<div class="d-flex flex-row justify-content-end align-items-center p-2">
+<div class="d-flex flex-row justify-content-end align-items-center p-2 gap-1">
   <a [routerLink]="'profile/' + currentUser?.id" class="mr-2" [innerText]="currentUser?.nickname"></a>
 
   <button class="btn btn-info" (click)="logout()">Logout</button>
