@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, map } from 'rxjs';
 
 import { FeaturedPost } from '../../types/featured-post';
 import { PostsQuery } from './posts.query';
@@ -34,6 +34,11 @@ export class PostsStateService {
 
   getAll(): FeaturedPost[] {
     return this.query.getAll();
+  }
+
+  selectById(id: string): Observable<FeaturedPost | undefined> {
+    return this.selectAll()
+      .pipe(map(posts => posts.find(post => post.id === id)));
   }
 
   update(id: string, post: FeaturedPost): void {

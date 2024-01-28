@@ -10,10 +10,12 @@ import { FeaturedImagePost } from '../../../core/types';
 import { BASE_HTTP_PATH } from '../../../core/constants';
 import { AlertTypes } from '../../../core/enums';
 import { unsubscribeMixin } from '../../../core/mixins';
+import { AuthUserStateService, PostsStateService } from '../../../core/states';
 
 @Component({
   selector: 'post-details',
   templateUrl: './post-details.component.html',
+  styleUrls: ['../../../core/custom-elements/likes/styles.css'],
 })
 export class PostDetailsComponent extends unsubscribeMixin() implements OnInit {
   post?: FeaturedPost;
@@ -28,17 +30,20 @@ export class PostDetailsComponent extends unsubscribeMixin() implements OnInit {
     private readonly postsApiService: DataService<FeaturedPost>,
     private readonly likesApiService: DataService<ILike>,
     private readonly alertsService: AlertsService,
+    private readonly authUserStateService: AuthUserStateService,
+    private readonly postsStateService: PostsStateService,
   ) {
     super();
   }
 
   ngOnInit(): void {
-    this.userId = this.storageService.getData('auth-token') as string;
+    const authUserSub = this.authUserStateService.select()
+      .pipe(tap(user => this.userId = user?.id))
+      .subscribe();
+    this.subscriptions.add(authUserSub);
+
     const postSub = this.getPostById().subscribe();
     this.subscriptions.add(postSub);
-
-    const likesSub = this.getLikes(this.getPostId).subscribe();
-    this.subscriptions.add(likesSub);
   }
 
   likedByUser = (): boolean => {
@@ -57,12 +62,20 @@ export class PostDetailsComponent extends unsubscribeMixin() implements OnInit {
       ).subscribe();
   }
 
-  addLike(postId: string, userId: string): Observable<void> {
+  addLike(postId: string, userId: string): void {
     const data: IAddLike = { postId, userId }
 
-    return this.likesApiService.add(`${BASE_HTTP_PATH}/likes`, JSON.stringify(data))
+    this.likesApiService.add(`${BASE_HTTP_PATH}/likes`, JSON.stringify(data))
       .pipe(
-        tap(() => {
+        tap(addedLike => {
+          let post = this.postsStateService.getById(addedLike.postId);
+
+          if (post) {
+            const likes = [...post.likes, addedLike];
+            const updatedPost = { ...post, likes, likesCount: likes.length };
+            this.postsStateService.update(updatedPost.id, updatedPost);
+          }
+
           this.alertsService.addAlert({
             heading: 'Success: ',
             body: 'you liked this post',
@@ -80,16 +93,24 @@ export class PostDetailsComponent extends unsubscribeMixin() implements OnInit {
 
           return of(err);
         })
-      );
+      ).subscribe();
   }
 
-  removeLike(post: FeaturedPost, userId: string): Observable<void | null> {
+  removeLike(post: FeaturedPost, userId: string): void {
     const like = post.likes.find(like => like.likedBy === userId);
 
     if (like) {
-      return this.likesApiService.delete(like.id)
+      this.likesApiService.delete(`${BASE_HTTP_PATH}/likes/post/${like.id}`)
         .pipe(
-          tap(() => {
+          tap(removedLike => {
+            const post = this.postsStateService.getById(removedLike.postId);
+
+            if (post) {
+              const updatedPostsLikes = post.likes.filter(like => like.id !== removedLike.id);
+              const updatedPost = { ...post, likes: updatedPostsLikes, likesCount: updatedPostsLikes.length };
+              this.postsStateService.update(updatedPost.id, updatedPost);
+            }
+
             this.alertsService.addAlert({
               heading: 'Success: ',
               body: 'you disliked this post',
@@ -107,10 +128,8 @@ export class PostDetailsComponent extends unsubscribeMixin() implements OnInit {
 
             return of(err);
           })
-        );
+        ).subscribe();
     }
-
-    return of(null);
   }
 
   isImagePost(post: FeaturedPost): boolean {
@@ -126,13 +145,14 @@ export class PostDetailsComponent extends unsubscribeMixin() implements OnInit {
       .pipe(tap(likes => setTimeout(() => this.likes$.next(likes), 0)));
   }
 
-  private getPostById(): Observable<FeaturedPost> {
-    return this.postsApiService.getById(`${BASE_HTTP_PATH}/posts/${this.getPostId()}`)
-      .pipe(tap(post => {
-        setTimeout(() => {
-          this.post = post;
-          this.postText = post.text;
-        }, 0)
+  private getPostById(): Observable<FeaturedPost | undefined> {
+    return this.postsStateService.selectById(this.getPostId())
+      .pipe(
+        tap(post => {
+          if (post) {
+            this.post = post;
+            this.postText = post.text;
+          }
       }));
   }
 

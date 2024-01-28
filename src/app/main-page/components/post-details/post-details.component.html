@@ -4,12 +4,12 @@
   <div class="d-flex flex-row justify-content-between align-items-center pb-4" *ngIf="post && userId">
     <button class="btn btn-info" routerLink="/">Go Back</button>
 
-    <likes-core
-      [likes]="post?.likes"
-      [likesCount]="post?.likesCount"
+    <!--suppress ALL-->
+    <likes-widget
+      [likes]="post.likes"
       [likedByUser]="likedByUser"
-      (onLikedOrDisliked)="$event ? addLike(post.id, userId).subscribe() : removeLike(post, userId).subscribe()"
-    ></likes-core>
+      (onLikedOrDisliked)="$event ? addLike(post.id, userId) : removeLike(post, userId)"
+    ></likes-widget>
   </div>
 
   <div class="" *ngIf="post">
@@ -29,3 +29,7 @@
     <button class="btn btn-danger" (click)="editModeEnabled = false">Cancel</button>
   </div>
 </ng-template>
+
+<script src="../../../core/custom-elements/likes/runtime.js" type="module"></script>
+<script src="../../../core/custom-elements/likes/polyfills.js" type="module"></script>
+<script src="../../../core/custom-elements/likes/main.js" type="module"></script>
