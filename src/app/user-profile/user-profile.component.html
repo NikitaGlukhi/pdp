@@ -1,3 +1,5 @@
+<alerts-outlet></alerts-outlet>
+
 <div class="px-2 py-4">
   <div class="d-flex flex-row justify-content-center align-items-start gap-5" *ngIf="user">
     <div class="d-flex flex-column w-50 mr-4" *ngIf="user !== undefined">
@@ -48,7 +50,7 @@
         </form>
 
         <div class="mt-2 w-100 d-flex flex-row justify-content-between gap-1">
-          <button class="btn btn-success w-50" (click)="updateUserData()">Save</button>
+          <button class="btn btn-success w-50" (click)="updateUserData()" [disabled]="form.touched && !form.valid">Save</button>
           <button class="btn btn-danger w-50" (click)="showForm = false">Cancel</button>
         </div>
       </div>

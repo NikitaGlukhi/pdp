@@ -10,6 +10,7 @@ import {IUser} from '../core/models';
 import {unsubscribeMixin} from '../core/mixins';
 import {AuthUserStateService, UsersStateService} from '../core/states';
 import {AlertTypes} from '../core/enums';
+import {emailRegexp} from '../core/constants';
 
 @Component({
   selector: 'user-profile',
@@ -87,11 +88,11 @@ export class UserProfileComponent extends unsubscribeMixin() implements OnInit, 
 
   private initForm(): void {
     this.form = this.formBuilder.group({
-      fullName: [this.user?.fullName],
-      nickname: [this.user?.nickname],
-      email: [this.user?.email],
-      phoneNumber: [this.user?.phoneNumber],
-      password: [null, [Validators.required]],
+      fullName: [this.user?.fullName, [Validators.required]],
+      nickname: [this.user?.nickname, [Validators.required]],
+      email: [this.user?.email, [Validators.required, Validators.pattern(emailRegexp)]],
+      phoneNumber: [this.user?.phoneNumber, [Validators.required]],
+      password: [null],
       photo: [this.user?.photo],
     });
   }
