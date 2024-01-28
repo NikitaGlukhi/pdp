@@ -72,7 +72,6 @@ router.get('/:login/:password', (req, res) => {
   }
 });
 
-
 router.put('/refreshToken', (req, res) => {
   const { authToken } = req.params;
   const decoded = jwt.decode(authToken, { complete: true });
@@ -98,6 +97,29 @@ router.put('/refreshToken', (req, res) => {
       res.status(500).json({ status: 'Failed to refresh token' });
     }
   }
-})
+});
+
+router.put('/:id', (req, res) => {
+  const { id } = req.params;
+  const buffer = fs.readFileSync(path.join(__dirname, './db.json'), { encoding: 'base64' });
+  const allData = JSON.parse(Buffer.from(buffer, 'base64').toString('utf8'));
+  const user = allData.users.find(user => user.id === id);
+  const userIdx = allData.users.findIndex(user => user.id === id);
+  const pathToFile = path.join(__dirname, './db.json');
+  const updatedUser = { ...user, ...req.body };
+  allData.users[userIdx] = updatedUser;
+
+  try {
+    fs.writeFile(pathToFile, JSON.stringify(allData), () => {
+     console.log(`Updated user - ${id}`);
+    });
+
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    console.log(err.message);
+
+    res.sendStatus(500);
+  }
+});
 
 module.exports = router;

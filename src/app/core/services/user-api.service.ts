@@ -47,6 +47,10 @@ export class UserApiService {
     return this.tokenRefreshCheckInterval.pipe(switchMap(() => this.executeRefresh(token)));
   }
 
+  updateUserById(id: string, user: Omit<IUser, 'id'>): Observable<IUser> {
+    return this.http.put<IUser>(`${this.basePath}/users/${id}`, user);
+  }
+
   private executeRefresh(token: string): Observable<void | null> {
     return this.http.put<string>(`${this.basePath}/users/refreshToken`, { token })
       .pipe(

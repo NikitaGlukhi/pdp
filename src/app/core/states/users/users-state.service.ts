@@ -17,7 +17,10 @@ export class UsersStateService {
 
   load(): Observable<IUser[]> {
     return this.usersApiService.getAll()
-      .pipe(tap(users => this.store.set(users)));
+      .pipe(tap(users => {
+        this.reset();
+        this.store.set(users)
+      }));
   }
 
   selectAll(): Observable<IUser[]> {
@@ -26,5 +29,9 @@ export class UsersStateService {
 
   reset(): void {
     this.store.reset();
+  }
+
+  update(id: string, user: IUser): void {
+    this.store.update(id, user);
   }
 }

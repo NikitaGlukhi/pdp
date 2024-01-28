@@ -19,7 +19,7 @@ export const isAuthenticated: CanActivateFn = (): boolean | Observable<boolean> 
     return false;
   }
 
-  return inject(UserApiService).getUserById(token)
+  return inject(UserApiService).getUser()
     .pipe(
       map(user => {
         if (user) {

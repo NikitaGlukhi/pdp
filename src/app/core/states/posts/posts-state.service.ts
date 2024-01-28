@@ -18,7 +18,10 @@ export class PostsStateService {
 
   load(): Observable<FeaturedPost[]> {
     return this.commonDataService.get(`${BASE_HTTP_PATH}/posts`)
-      .pipe(tap(posts => this.store.set(posts)));
+      .pipe(tap(posts => {
+        this.reset();
+        this.store.set(posts)
+      }));
   }
 
   reset(): void {

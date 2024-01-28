@@ -17,7 +17,10 @@ export class AuthUserStateService {
 
   load(): Observable<IUser> {
     return this.userApiService.getUser()
-      .pipe(tap(user => this.store.set([user])))
+      .pipe(tap(user => {
+        this.reset();
+        this.store.set([user]);
+      }))
   }
 
   select(): Observable<IUser> {
