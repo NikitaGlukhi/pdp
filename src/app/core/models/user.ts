@@ -9,5 +9,6 @@ export interface IUser extends BaseEntity {
   password: string;
   photo: string;
   role: string;
+  allowToShowPosts: boolean;
   posts?: FeaturedPost[];
 }

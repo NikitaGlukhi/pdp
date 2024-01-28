@@ -45,9 +45,10 @@
         [post]="post"
         [currentUserId]="post.userId"
         [userName]="getUserNicknameById(post.userId)"
-        (onLike)="reloadPosts(addLike(post.id, currentUser?.id || ''))"
-        (onDislike)="reloadPosts(removeLike(post, currentUser?.id || ''))"
-        (onMarkedFeatured)="reloadPosts(markPostFeatured($event, posts))"
+        [showPost]="checkPostToShow(post.userId)"
+        (onLike)="addLike(post.id, currentUser?.id || '')"
+        (onDislike)="removeLike(post, currentUser?.id || '')"
+        (onMarkedFeatured)="markPostFeatured($event, posts)"
       ></post-core>
     </div>
   </div>

@@ -67,7 +67,7 @@ router.put('/:id', (req, res) => {
       postConsoleMessage(data.userId, id);
     });
 
-    res.json({ statusText: 'OK' });
+    res.status(200).json(JSON.parse(data));
   } catch (err) {
     console.log(err.message);
 
@@ -80,14 +80,15 @@ router.post('/', (req, res) => {
   const allData = JSON.parse(Buffer.from(buffer, 'base64').toString('utf8'));
   const pathToFile = path.join(__dirname, './db.json');
   const body = JSON.parse(req.body.data);
-  allData.posts.push({ ...body, createdAt: Date.now() });
+  const newPost = { ...body, createdAt: Date.now() }
+  allData.posts.push(newPost);
 
   try {
     fs.writeFile(pathToFile, JSON.stringify(allData), () => {
       postConsoleMessage(body.userId, body.id, true);
     });
 
-    res.json({ statusText: 'OK' });
+    res.status(200).json(newPost);
   } catch (err) {
     console.log(err.message);
 

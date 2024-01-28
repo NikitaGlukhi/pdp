@@ -8,8 +8,8 @@ export class DataService<T> {
 
   constructor(private readonly http: HttpClient) {}
 
-  add(url: string, data: string): Observable<void> {
-    return this.http.post<void>(url, { data });
+  add(url: string, data: string): Observable<T> {
+    return this.http.post<T>(url, { data });
   }
 
   get(url: string): Observable<T[]> {
@@ -24,11 +24,13 @@ export class DataService<T> {
     return this.http.get<T>(url);
   }
 
-  update(url: string, data: string): Observable<void> {
-    return this.http.put<void>(url, { data });
+  update(url: string, data: string): Observable<T> {
+    console.log(data);
+
+    return this.http.put<T>(url, { data });
   }
 
-  delete(url: string): Observable<void> {
-    return this.http.delete<void>(url);
+  delete(url: string): Observable<T> {
+    return this.http.delete<T>(url);
   }
 }

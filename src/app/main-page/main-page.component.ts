@@ -8,12 +8,12 @@ import {IAddLike, ILike, IUser} from '../core/models';
 import {AlertTypes, SortPostOptions} from '../core/enums';
 import {PostFactory} from '../core/factories';
 import {FeaturedPost} from '../core/types/featured-post';
-import {AuthUserStateService, PostsStateService} from '../core/states';
+import {AuthUserStateService, PostsStateService, UsersStateService} from '../core/states';
 import {AlertsService, AuthService, DataService, StorageService, UserApiService} from '../core/services';
 import {AddPostComponent} from './modals';
 import {BASE_HTTP_PATH} from '../core/constants';
 import {unsubscribeMixin} from '../core/mixins';
-import {UsersStateService} from '../core/states/users/users-state.service';
+import {add} from 'husky';
 
 @Component({
   selector: 'main-page',
@@ -120,12 +120,20 @@ export class MainPageComponent extends unsubscribeMixin() implements OnInit, OnD
       ).subscribe();
   }
 
-  addLike(postId: string, userId: string): Observable<void> {
-    const data: IAddLike = { postId, userId }
+  addLike(postId: string, userId: string): void {
+    const data: IAddLike = { postId, userId };
 
-    return this.likesApiService.add(`${BASE_HTTP_PATH}/likes`, JSON.stringify(data))
+    this.likesApiService.add(`${BASE_HTTP_PATH}/likes`, JSON.stringify(data))
       .pipe(
-        tap(() => {
+        tap(addedLike => {
+          let post = this.postsStateService.getById(addedLike.postId);
+
+          if (post) {
+            const likes = [...post.likes, addedLike];
+            const updatedPost = { ...post, likes, likesCount: likes.length };
+            this.postsStateService.update(updatedPost.id, updatedPost);
+          }
+
           this.alertsService.addAlert({
             heading: 'Success: ',
             body: 'you liked this post',
@@ -143,16 +151,24 @@ export class MainPageComponent extends unsubscribeMixin() implements OnInit, OnD
 
           return of(err);
         })
-      );
+      ).subscribe();
   }
 
-  removeLike(post: FeaturedPost, userId: string): Observable<void | null> {
+  removeLike(post: FeaturedPost, userId: string): void {
     const like = post.likes.find(like => like.likedBy === userId);
 
     if (like) {
-      return this.likesApiService.delete(like.id)
+      this.likesApiService.delete(`${BASE_HTTP_PATH}/likes/post/${like.id}`)
         .pipe(
-          tap(() => {
+          tap(removedLike => {
+            const post = this.postsStateService.getById(removedLike.postId);
+
+            if (post) {
+              const updatedPostsLikes = post.likes.filter(like => like.id !== removedLike.id);
+              const updatedPost = { ...post, likes: updatedPostsLikes, likesCount: updatedPostsLikes.length };
+              this.postsStateService.update(updatedPost.id, updatedPost);
+            }
+
             this.alertsService.addAlert({
               heading: 'Success: ',
               body: 'you disliked this post',
@@ -161,6 +177,8 @@ export class MainPageComponent extends unsubscribeMixin() implements OnInit, OnD
             })
           }),
           catchError(err => {
+            console.log(err);
+
             this.alertsService.addAlert({
               heading: 'Failed: ',
               body: 'an error occurred during disliking post',
@@ -170,33 +188,33 @@ export class MainPageComponent extends unsubscribeMixin() implements OnInit, OnD
 
             return of(err);
           })
-        );
+        ).subscribe();
     }
-
-    return of(null);
   }
 
-  markPostFeatured(data: { postId: string, isFeatured: boolean }, posts: FeaturedPost[]): Observable<void | null> {
+  markPostFeatured(data: { postId: string, isFeatured: boolean }, posts: FeaturedPost[]): void {
     const {postId, isFeatured} = data;
     let post = posts.find(post => post.id === postId);
 
     if (post) {
       post = {...post, isFeatured};
-      return this.postsApiService.update(
+      this.postsApiService.update(
         `${BASE_HTTP_PATH}/posts/${data.postId}`,
         JSON.stringify(post),
       )
         .pipe(
-          tap(() => this.alertsService.addAlert({
-            heading: 'Success: ',
-            body: 'post added to featured posts',
-            time: Date.now(),
-            type: AlertTypes.success,
-          })),
-        );
-    }
+          tap(updatedPost => {
+            this.postsStateService.update(updatedPost.id, updatedPost);
 
-    return of(null);
+            this.alertsService.addAlert({
+              heading: 'Success: ',
+              body: 'post added to featured posts',
+              time: Date.now(),
+              type: AlertTypes.success,
+            })
+          }),
+        ).subscribe();
+    }
   }
 
   searchPosts(): void {
@@ -209,7 +227,7 @@ export class MainPageComponent extends unsubscribeMixin() implements OnInit, OnD
   }
 
   getUserNicknameById = (id?: string): string => {
-    const user = this.users?.find(user => user.id === id);
+    const user = this.usersStateService.getById(id || '');
 
     return user?.nickname || 'N/A';
   }
@@ -222,10 +240,10 @@ export class MainPageComponent extends unsubscribeMixin() implements OnInit, OnD
     this.authService.logout();
   }
 
-  reloadPosts(method: Observable<void | null>): void {
-    method
-      .pipe(switchMap(() => this.postsStateService.load()))
-      .subscribe();
+  checkPostToShow(userId: string): boolean {
+    const user = this.usersStateService.getById(userId);
+
+    return user?.allowToShowPosts || true;
   }
 
   override ngOnDestroy(): void {

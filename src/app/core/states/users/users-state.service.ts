@@ -27,6 +27,10 @@ export class UsersStateService {
     return this.query.selectAll();
   }
 
+  getById(id: string): IUser | undefined {
+    return this.query.getEntity(id);
+  }
+
   reset(): void {
     this.store.reset();
   }

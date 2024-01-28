@@ -23,6 +23,7 @@ export class PostComponent {
   @Input() post?: FeaturedPost;
   @Input() currentUserId?: string;
   @Input() userName?: string;
+  @Input() showPost = true;
   @Input() displayLikesCount = false;
 
   @Output() onLike = new EventEmitter<void>();

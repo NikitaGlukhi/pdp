@@ -94,6 +94,7 @@ export class UserProfileComponent extends unsubscribeMixin() implements OnInit, 
       phoneNumber: [this.user?.phoneNumber, [Validators.required]],
       password: [null],
       photo: [this.user?.photo],
+      allowToShowPosts: [this.user?.allowToShowPosts, [Validators.required]]
     });
   }
 }

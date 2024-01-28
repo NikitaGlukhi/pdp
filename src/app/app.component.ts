@@ -19,7 +19,7 @@ export class AppComponent {
 
         this.meta.removeTag('http-equiv=Content-Security-Policy');
         let content = tag.getAttribute('content') as string;
-        let str = 'connect-src ';debugger;
+        let str = 'connect-src ';
         let index = content.indexOf(str);
         content = content.slice(0, index + str.length) + "http://localhost:3000/ " + content.slice(index + str.length);
         this.meta.updateTag({ 'http-equiv': 'Content-Security-Policy', content: content });

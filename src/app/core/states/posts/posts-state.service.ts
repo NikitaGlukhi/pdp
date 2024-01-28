@@ -41,6 +41,6 @@ export class PostsStateService {
   }
 
   getById(id: string): FeaturedPost | undefined {
-    return this.getAll().find(post => post.id === id);
+    return this.query.getEntity(id);
   }
 }

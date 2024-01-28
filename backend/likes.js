@@ -3,6 +3,7 @@ const { v4 } = require('uuid');
 const fs = require('fs');
 const path = require('path');
 const { Map, fromJS } = require('immutable');
+const {all} = require("express/lib/application");
 const router = express.Router();
 
 function getAllData() {
@@ -19,8 +20,7 @@ function prepareLikeData(id, data) {
 
 router.post('/', (req, res) => {
   const { data } = req.body;
-
-  const newLike = prepareLikeData(v4(), data);
+  const newLike = prepareLikeData(v4(), JSON.parse(data));
 
   const buffer = getAllData();
   const allData =  JSON.parse(Buffer.from(buffer, 'base64').toString('utf8'));
@@ -32,7 +32,7 @@ router.post('/', (req, res) => {
       console.log('New like added');
     });
 
-    res.json({ statusText: 'OK' });
+    res.status(200).json(newLike);
   } catch (err) {
     console.log(err.message);
 
@@ -55,6 +55,7 @@ router.delete('/post/:likeId', (req, res) => {
   const buffer = getAllData();
   const allData =  JSON.parse(Buffer.from(buffer, 'base64').toString('utf8'));
   const pathToFile = path.join(__dirname, './db.json');
+  const likeToDelete = allData.likes.find(like => like.id === likeId);
   allData.likes = allData.likes.filter(like => like.id !== likeId);
 
   try {
@@ -62,7 +63,7 @@ router.delete('/post/:likeId', (req, res) => {
       console.log('Like removed');
     });
 
-    res.json({ statusText: 'OK' });
+    res.status(200).json(likeToDelete);
   } catch (err) {
     console.log(err.message);
 
