@@ -1,42 +1,42 @@
-## TypeScript Genetics.
-I created generic DataService in `src/app/core/services/data.service.ts` and replace all usage of LikesApiService and PostsApiService with it.
+## Create a dynamic user profile management system allowing users to view, edit, and update their personal information. This system should integrate seamlessly with the existing social media application, enhancing user interactivity and personalization.
+In `src/app/user-profile` I added Edit User Data form, which allows user to edit his/her name, nickname, email password phone number.
+Validation was provided for this form, for email control regexp pattern was created (`src/app/core/constants/email-regexp.ts`).
 
-#### How did using generics in the DataService improve the scalability and maintainability of the application?
-Now I have single service for working with likes/posts data and they have the same functional to get/add/update/delete data, that will simplify working with getting data for those entities in the future.
+Also, user can hide all his/her posts by selecting `Allow users to see my posts` option in text.
 
-#### What were the main challenges you faced when integrating the generic service with existing features like posts, likes, and featured posts?
-The main challenge for me was refactoring calling, parsing methods and endpoints on BE to make functional identical for DataService.
+Storage of user data was changes. I reworked it to Akita store (all users' data - `src/app/core/states/users`, current authenticated user - `src/app/core/states/auth-user`).
+So, after user's data was updated in form, the changes will take effect on all pages.
 
-## Memory leaks
-You can find unsubscribe mixing here - `src/app/core/mixins/unsubscribe-mixin.ts` and its usage in
-`src/app/main-page/main-page.component.ts`, `src/app/main-page/components/post-details/post-details.component.ts` and `src/app/user-profile/user-profile.component.ts`
+Unfortunately I couldn't implement changing user photo functional, because couldn't find the best solution that will avoid me to create specific cloud storage for images.
+But I implemented image selector control component - `src/app/core/controls/image-control` for this, that will be used in app when I find best solution for those pet project how to store images in DB.
 
-#### Discuss the challenges you faced in implementing this mixin and making it generic for use across different components.
-The main challenge for me was adding specific functional to he `ngOnDestroy` in `src/app/main-page/main-page.component.ts`. Resolved it by adding `override` before `ngOnDestroy`
+### How did you structure your Angular form for profile management? Discuss the choice between reactive and template-driven forms and why one was more suitable for this task.
+I used angular reactive forms, because it's easier to manipulate and validate input data. Also, via `valueChanges` event (not used in this project) I can create a specific logic on specific field's value.
 
-#### How did you determine which components were responsible for the leaks?
-I found components, that has subscriptions and events (in my case - active worker in `src/app/main-page/main-page.component.ts`) 
+### What validation techniques did you implement and how do they contribute to a better user experience?
+For validation, I used `Validators.required` method and for email field I used `Validators.pattern` where I used email regexp (`src/app/core/constants/email-regexp.ts`).
 
-## Dependency injection
-You can find LoggingService in `src/app/core/services/logging.service.ts` and its usage by finding `inject(LoggingService)`.
-I reworked `AuthService` and made it not provided in root. I added it via providers in `src/app/auth/components/login/login.component.ts` and `src/app/main-page/main-page.component.ts`.
+### How did you ensure that the user profile changes were propagated throughout the application? Discuss any challenges you faced and how you overcame them.
+I implemented saving user data via Akita store all users' data - `src/app/core/states/users`, current authenticated user - `src/app/core/states/auth-user`).
 
-#### How did Dependency Injection help in managing dependencies across different components and services in the application?
-It allows to avoid creating duplicating code and allows to use single functional in different components/other services.
+## Improve your app by enhancing post and comment interactivity using Observables and RxJS, with a focus on understanding mergeMap vs merge and avoiding common anti-patterns.
+Storage of user data was changes. I reworked it to Akita store (all users' data - `src/app/core/states/users`, current authenticated user - `src/app/core/states/auth-user`).
+So, after user's data was updated in form, the changes will take effect on all pages.
 
-## JWT Auth
-JWT auth implemented in `backend/users.js`. I used `jsinwebtoken` for it. Also, here is an endpoint to refresh auth token (`/refreshToken`)
-Interceptor, that adds JWT to HTTP-request is here - `src/app/core/interceptors/jwt-interceptor.ts`.
+To make app updating in realtime backend was reworked. Now, all POST/PUT/DELETE method returns updated data, that updates/adds/removes to Akita store. So, now, for example, likes counter works good in realtime.
 
-#### Discuss the security considerations you took into account when storing and transmitting JWTs
-With JWT it difficult to get critical user data, because you need to decode JWT token, but you can't do it without secret key.
+### Observable Strategies: Reflect on your choice between using mergeMap vs merge for real-time updates and dynamic comment loading. Why was one more suitable for the tasks at hand?
+`mergeMap` is more suitable for real-time apps cause it doesn't unsubscribe form previous event.
 
-## Angular Security Features
-Added Content Security Policy in the `src/app/app.component.ts`. Added sanitizer in the `src/app/main-page/main-page.component.ts` and `src/app/main-page/modals/add-post/add-post.component.ts`
-Created role-based guard (`src/app/core/guards/admin-guard.ts`) that allows to visit Status Codes page only for admins.
+### Performance Considerations: How did you ensure that the implementation of real-time features was efficient and did not degrade app performance? Discuss any specific challenges you faced and the strategies used to overcome them.
+I updated implementation of backend endpoints (POST/PUT/DELETE) that now return updated data to the FE part where its updates in Akita store.
 
-#### Discuss the importance of sanitizing user input and output in the context of preventing XSS attacks
-Sanitizing of user input is very important thing, cause it now allow to put dangerous links/scripts to the application.
+## Integrate Angular Elements to create reusable custom widgets that can be utilized across the social media clone, enhancing the application's modularity and the developer's understanding of web components.
+Custom likes widget implemented in specific repository - `https://github.com/NikitaGlukhi/likes-widget`. I used its build chunks here - `src/app/core/custom-elements/likes`
+and integrated scripts in `index.html` and tried to use custom widget in `src/app/main-page/components/post-details` but unfortunately it doesn't render.
 
-#### Describe the process of implementing RBAC in the application. How did Angular’s features facilitate this implementation?
-Angular allows to create RBAC via route guards. We can do it using simply way - via user role or using harder way - add specific scope to the route data and store necessary scope for each user in DB.
+### Angular Elements Integration: Discuss the process and challenges you faced integrating Angular Elements into the existing social media clone. How did Angular Elements enhance or complicate the architecture?
+Angular elements allows to create custom reusable components, that we can be used in different environments (not only JS environment). The only complicate case for me is integrating custom element to application.
+
+### Custom Widget Design: Reflect on the design and development of your custom widgets. How did Angular Elements facilitate the creation of these reusable components?
+With Angular Elements I have single component with specific design that I can use in many other apps and I need, for example, change styles or functional once and that I just need to update usage of element in my app like updating library version.
